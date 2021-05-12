@@ -1,24 +1,37 @@
-import React from 'react'
+import React from "react";
 import styled from 'styled-components'
+import {useSelector} from 'react-redux';
+import {selectUserName, selectPhoto, setSignOut} from '../features/user/userSlice';
+import { auth } from "../firebase";
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
-function TodoHeader() {
+function TodoHeader() { 
+    
+    const dispatch = useDispatch();    
+    const history = useHistory()
+    const userName = useSelector(selectUserName);    
+    const userPhoto = useSelector(selectPhoto);
+
+    const signOut = () =>{
+        auth.signOut()
+        .then(() => {
+            dispatch(setSignOut());
+            history.push("/login");
+        })
+    }
+
     return (
         <Container>
             <Logo>
-                <img src="/images/menu2.png"/>
+                <img src="/images/menu2.png" alt="Menu"/>
             </Logo>
             <Title>
-                My To-do list
+                My To-do list                
             </Title>            
-            <Login>
-                Login
-            </Login>
-            <SignUp>
-                Sign Up
-            </SignUp>
             <User>
-                <img src="/images/vini.png"/>
-            </User>            
+                <img src={userPhoto} alt="UserImage" onClick={signOut}/>
+            </User>                                                                                   
         </Container>        
     )
 }
@@ -54,47 +67,13 @@ const Title = styled.div`
 `
 
 const User = styled.div`    
-    align-content: center;    
+    align-content: center;        
 
 img {    
-    width: 50px;
+    width: 40px;
+    height: 40px;
     padding: 0px 10px;    
+    border-radius: 50%;
+    cursor: pointer;
 }
-`
-
-const Login = styled.div`
-    border: 1px solid;    
-    border-radius: 5px;
-    padding: 5px 10px;
-    margin: 10px;    
-    align-items: center;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.3s ease 0s;
-
-    &:hover{
-        background-color: white;
-        color: #000;
-        border-color: transparent;
-
-    }
-`
-
-const SignUp = styled.div`
-    border: 1px solid;
-    border-radius: 5px;
-    padding: 5px 10px;
-    margin: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.3s ease 0s;
-
-    &:hover{
-        background-color: white;
-        color: #000;
-        border-color: transparent;
-
-    }
 `

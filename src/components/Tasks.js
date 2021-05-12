@@ -1,18 +1,87 @@
-import React, {useEffect,useState} from 'react'
-import styled from 'styled-components'
+import React, {useEffect} from "react";
+import styled from "styled-components";
+import db from "../firebase";
+import { 
+       addTask, 
+       setTasks, 
+       updateTaskName, 
+       selectNewTask, 
+       selectTasks, 
+       updateTaskStatus 
+} from '../features/task/taskSlice';
+import {selectUserName, selectPhoto, selectEmail} from '../features/user/userSlice';
+import { useDispatch } from 'react-redux';
+import {useSelector} from 'react-redux';
 
 function Tasks() {
 
-    const [list, setlist] = useState([])
-    const [inputValue, setinputValue] = useState('')
+    const dispatch = useDispatch();    
+    const newTask = useSelector(selectNewTask);
+    const tasklist = useSelector(selectTasks);
+    const userName = useSelector(selectUserName);
+    const userEmail = useSelector(selectEmail);
+    const userPhoto = useSelector(selectPhoto);
+
+    useEffect(() => { 
+        console.log("user name: ",userName);
+        console.log("user photo: ",userPhoto);
+        console.log("user email: ",userEmail);  
+
+        const getDbTasks = async () => {
+            let templist = [];            
+            const response = await db.collection(userEmail)
+                                    .orderBy('dateadded', 'desc')                                   
+                                    .get()
+                                    .then((snap) => {
+                                        snap.forEach(function(doc) {
+                                            const tdata = {id: doc.id, ...doc.data()}
+                                            templist.push(tdata);
+                                        });
+                                        return templist;
+                                    })
+            console.log("response", response);              
+            dispatch(setTasks(response));
+            console.log("response", tasklist); 
+        };
+        getDbTasks();
+    }, [])
 
     const OnKeyPressEvent = (e) => {
         if(e.key === "Enter"){
-            list.push(inputValue);
-            setinputValue('');
-        }    
-        console.log("this is",list);    
+            const addDbTask = async () => {
+                console.log("key press newtask", newTask);
+                const response = await db.collection(userEmail).add(newTask);
+                console.log("key press response", response);                
+                dispatch(addTask(newTask));   
+            }
+            addDbTask();
+            e.target.value = '';                          
+        }            
     }   
+
+    const onChangeEvent = (e) => {      
+        console.log(e.target.value);
+        dispatch(updateTaskName(e.target.value));
+    }
+
+    const onCheckboxClick = id => e => {        
+        console.log("checkbox event",userEmail);
+        console.log(id);
+        
+        
+
+        const updateDbStatus = async () => {
+            const response = await db.collection(userEmail).doc(id).update({
+                                        completed: e.target.checked
+                                    })                                                           
+        }
+        updateDbStatus();   
+        const udpateDbTask = {
+            completed: e.target.checked,
+            id: id
+        } 
+        dispatch(updateTaskStatus(udpateDbTask));  
+    }
 
     return (
         <Nav>
@@ -20,27 +89,29 @@ function Tasks() {
                 {/* <img src="/images/complete.png"/> */}
             </Menu>
             <Container>            
-                <TaskBar>                
-                    <Input value={inputValue} 
+                <TaskBar>                             
+                    <Input
                         placeholder="Enter task"
                         onKeyPress={OnKeyPressEvent}
-                        onChange={(e) => {
-                            setinputValue(e.target.value);
-                        }}/>                    
+                        onChange={onChangeEvent}                        
+                         />                    
                     <Icon>
-                        <img src="/images/clear.png" onClick={() => {setinputValue('')}}/>  
+                        <img src="/images/clear.png" alt="Clear Text"/>  
                     </Icon>
                 </TaskBar>
                 <TaskList> 
-                    {
-                        list.length > 0 && 
-                        list.map((inputValue) => (
-                            <Wrap>
-                                <InputCheckBox type="checkbox"/>
-                                <TaskTitle>
-                                    {inputValue}
-                                </TaskTitle>
-                            </Wrap>))
+                    {                          
+                       tasklist && tasklist.map((task) => (
+                        <Wrap key={task.id}>
+                            <InputCheckBox type="checkbox" id={task.id}                             
+                            defaultChecked={task.completed}
+                            onChange={onCheckboxClick(task.id)}
+                            />
+                            <TaskTitle>
+                                {task.title}
+                            </TaskTitle>
+                        </Wrap>
+                        ))                                                                  
                     }                               
                 </TaskList>
             </Container>
@@ -67,7 +138,7 @@ const Container = styled.div`
 const Menu = styled.div`
     background-color: black;
     width: 80px;
-    height: 100vh;
+    min-height: calc(100vh - 50px);
     flex-direction: column;
 
     img {
