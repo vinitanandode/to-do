@@ -28,10 +28,7 @@ function TodoHeader() {
             </Logo>
             <Title>
                 My To-do list                
-            </Title>            
-            <User>
-                <img src={userPhoto} alt="UserImage" onClick={signOut}/>
-            </User>                                                                                   
+            </Title>                                                                                                          
         </Container>        
     )
 }

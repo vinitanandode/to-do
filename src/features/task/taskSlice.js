@@ -27,16 +27,21 @@ const taskSlice = createSlice({
             let newTaskList = [...state.taskList];
             newTaskList[action.payload.id] = {...newTaskList[action.payload.id], completed: action.payload.completed};
             state.taskList = newTaskList;
+        },
+        deleteStateTask: (state, action) => {
+            let newTaskList = [...state.taskList];
+            let index = action.payload.id;
+            newTaskList.splice(index,1);
+            state.taskList = newTaskList;
         }
     }
 })
 
-export const {setTasks, addTask, updateTaskName, updateTaskStatus} = taskSlice.actions;
+export const {setTasks, addTask, updateTaskName, updateTaskStatus, deleteStateTask} = taskSlice.actions;
 
 export const selectTasks = (state) => state.tasks.taskList;
 export const selectNewTask = (state) => {
-    return {
-        id: state.tasks.taskId,
+    return {        
         title: state.tasks.taskTitle,
         completed: state.tasks.taskCompleted,
         dateadded: state.tasks.taskDateAdded

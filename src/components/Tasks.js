@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import db from "../firebase";
 import { 
@@ -7,11 +7,14 @@ import {
        updateTaskName, 
        selectNewTask, 
        selectTasks, 
-       updateTaskStatus 
+       updateTaskStatus,
+       deleteStateTask
 } from '../features/task/taskSlice';
 import {selectUserName, selectPhoto, selectEmail} from '../features/user/userSlice';
 import { useDispatch } from 'react-redux';
 import {useSelector} from 'react-redux';
+import TextField from '@material-ui/core/TextField';
+import DeleteRounded from '@material-ui/icons/DeleteRounded';
 
 function Tasks() {
 
@@ -22,6 +25,8 @@ function Tasks() {
     const userEmail = useSelector(selectEmail);
     const userPhoto = useSelector(selectPhoto);
 
+    //const [tasklist, settasklist] = useState([]);
+
     useEffect(() => { 
         console.log("user name: ",userName);
         console.log("user photo: ",userPhoto);
@@ -29,7 +34,7 @@ function Tasks() {
 
         const getDbTasks = async () => {
             let templist = [];            
-            const response = await db.collection(userEmail)
+            const response = await db.collection("vinita.nandode@gmail.com")
                                     .orderBy('dateadded', 'desc')                                   
                                     .get()
                                     .then((snap) => {
@@ -39,9 +44,9 @@ function Tasks() {
                                         });
                                         return templist;
                                     })
-            console.log("response", response);              
-            dispatch(setTasks(response));
-            console.log("response", tasklist); 
+            console.log("response load", response);              
+            dispatch(setTasks(response));            
+            console.log("response state", tasklist); 
         };
         getDbTasks();
     }, [])
@@ -50,8 +55,9 @@ function Tasks() {
         if(e.key === "Enter"){
             const addDbTask = async () => {
                 console.log("key press newtask", newTask);
-                const response = await db.collection(userEmail).add(newTask);
-                console.log("key press response", response);                
+                const response = await db.collection("vinita.nandode@gmail.com").add(newTask);
+                console.log("key press response", response.id);  
+                newTask.id = response.id;              
                 dispatch(addTask(newTask));   
             }
             addDbTask();
@@ -67,11 +73,9 @@ function Tasks() {
     const onCheckboxClick = id => e => {        
         console.log("checkbox event",userEmail);
         console.log(id);
-        
-        
 
         const updateDbStatus = async () => {
-            const response = await db.collection(userEmail).doc(id).update({
+            const response = await db.collection("vinita.nandode@gmail.com").doc(id).update({
                                         completed: e.target.checked
                                     })                                                           
         }
@@ -83,11 +87,22 @@ function Tasks() {
         dispatch(updateTaskStatus(udpateDbTask));  
     }
 
+    const deleteTask = (id) => {
+        console.log("clicked");
+        console.log(id);
+        const deleteDbTask = async () => {
+            const response = await db.collection("vinita.nandode@gmail.com").doc(id).delete();                                                           
+        }
+        deleteDbTask(); 
+        const taskDeleted = {            
+            id: id
+        } 
+        console.log("task to be deleted from state", taskDeleted);
+        dispatch(deleteStateTask(taskDeleted)); 
+    }
+
     return (
-        <Nav>
-            <Menu>
-                {/* <img src="/images/complete.png"/> */}
-            </Menu>
+        <Nav>                      
             <Container>            
                 <TaskBar>                             
                     <Input
@@ -98,23 +113,29 @@ function Tasks() {
                     <Icon>
                         <img src="/images/clear.png" alt="Clear Text"/>  
                     </Icon>
-                </TaskBar>
+                </TaskBar>                               
                 <TaskList> 
                     {                          
                        tasklist && tasklist.map((task) => (
                         <Wrap key={task.id}>
-                            <InputCheckBox type="checkbox" id={task.id}                             
+                            <InputCheckBox type="checkbox" id={task.id}
                             defaultChecked={task.completed}
                             onChange={onCheckboxClick(task.id)}
                             />
                             <TaskTitle>
-                                {task.title}
+                                {task.title}                                
                             </TaskTitle>
+                            <ActionContainer>
+                                <img src="/images/delete.png" onClick={() => deleteTask(task.id)}/>
+                            </ActionContainer>
                         </Wrap>
                         ))                                                                  
                     }                               
                 </TaskList>
             </Container>
+            <NotesContainer>
+
+            </NotesContainer>
         </Nav>
     )
 }
@@ -122,13 +143,18 @@ function Tasks() {
 export default Tasks;
 
 const Nav = styled.div`    
-    display: flex;
-
+    
+    background-color: grey;
+    min-height: calc(100vh - 50px);
+    padding: 0 calc(3.5vw + 5px);
+    overflow: hidden;
+    position:relative;
 `
 
 const Container = styled.div`    
     padding: 10px 10px;
-    width: calc(100vw- 30px);
+    /* width: calc(100vw- 30px); */
+    width: 50%;
     display: flex;
     flex-direction: column;
     margin-top: 5px;    
@@ -148,22 +174,25 @@ const Menu = styled.div`
 `
 
 const TaskBar = styled.div`
-    border: 1px solid;
+    border: 3px solid rgba(249, 249, 249, 0.1);
+    background-color: rgba(249, 249, 249, 0.8);;
     align-items: center;
     display: flex;
     justify-content: center;
-    padding: 5px;        
-    border-radius: 5px;
-
+    padding: 5px;  
+    width: 100%;      
+    border-radius: 10px;
+    
     &:hover {
-        box-shadow: 2px 2px 2px thistle;
-    }
+        box-shadow: rgb(0 0 0 / 69%) 0px 26px 30px -10px,
+        rgb(0 0 0 / 73%) 0px 16px 10px -10px;
+      }
 `
 
 const Input = styled.input`
-    min-width: 50px;
+    /* min-width: 50px; */
     min-height: 25px;
-    width: calc(100vw - 150px);
+    /* width: calc(100vw - 150px); */
     background-color: transparent;    
     border: 0;
     flex: 1 0;
@@ -196,23 +225,43 @@ const Icon = styled.div`
 `
 
 const TaskTitle = styled.div`
-    padding-left: 5px;  
-    display: block;  
+    padding-left: 5px;          
+        
 `
 
 const TaskList = styled.div`
-    
+    border: 1px thin;
+    background-color: rgba(249, 249, 249, 0.8);;
     padding: 5px 5px;
     margin: 10px;
-    width: calc(100vw - 120px);        
-    border-radius: 5px;
-    overflow: auto;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;    
     position: relative;
 `
 
 const Wrap = styled.div`
+    border: 1px solid rgba(249, 249, 249, 0.1);
+    border-radius: 10px; 
+    background-color: rgb(186,189,194);
     display: flex;     
     padding: 5px;  
     position: obsolute;     
-   
+    margin: 10px;
+    align-items: center;   
+    
+`
+const ActionContainer = styled.div`         
+    display: flex;
+    flex:1;
+    justify-content: flex-end;
+    cursor: pointer;    
+    
+    img{
+        width: 20px;
+        height: 20px;
+    }
+`
+const NotesContainer = styled.div`
+    width: 50%;
 `
