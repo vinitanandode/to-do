@@ -13,20 +13,41 @@ const taskSlice = createSlice({
     initialState,
     reducers:{
         setTasks: (state, action) => {
-            state.taskList = action.payload;
+            state.taskList = action.payload;   
+            state.taskList.sort((a,b) => b.completed - a.completed);                      
+            state.taskList.sort(function(x, y) {                
+                // false values first
+                return (x.completed === y.completed)? 0 : x.completed? 1 : -1;
+            });                       
         },  
         addTask: (state, action) => {
-            state.taskList.unshift(action.payload);              
+            state.taskList.unshift(action.payload);
+            state.taskList.sort((a,b) => b.completed - a.completed);   
+            state.taskList.sort(function(x, y) {                
+                // false values first
+                return (x.completed === y.completed)? 0 : x.completed? 1 : -1;
+            });           
         },
         updateTaskName:(state, action) => {            
             state.taskTitle = action.payload;
             state.taskCompleted = false;
-            state.taskDateAdded = Date().toLocaleString();
+            state.taskDateAdded = Date().toLocaleString();            
+            state.taskList.sort((a,b) => b.completed - a.completed);   
+            state.taskList.sort(function(x, y) {                
+                // false values first
+                return (x.completed === y.completed)? 0 : x.completed? 1 : -1;
+            });
         },
         updateTaskStatus: (state, action) => {
-            let newTaskList = [...state.taskList];
-            newTaskList[action.payload.id] = {...newTaskList[action.payload.id], completed: action.payload.completed};
-            state.taskList = newTaskList;
+            let newTaskList = [...state.taskList];            
+            let index = newTaskList.findIndex((obj => obj.id === action.payload.id));
+            newTaskList[index].completed = action.payload.completed;                                        
+            state.taskList = newTaskList; 
+            state.taskList.sort((a,b) => b.completed - a.completed);   
+            state.taskList.sort(function(x, y) {                
+                // false values first
+                return (x.completed === y.completed)? 0 : x.completed? 1 : -1;
+            });           
         },
         deleteStateTask: (state, action) => {
             let newTaskList = [...state.taskList];
@@ -47,7 +68,5 @@ export const selectNewTask = (state) => {
         dateadded: state.tasks.taskDateAdded
     }
 }
-
-    
 
 export default taskSlice.reducer;

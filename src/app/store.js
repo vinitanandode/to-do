@@ -1,4 +1,5 @@
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import notesSlice from '../features/notes/notesSlice';
 import taskReducer from '../features/task/taskSlice';
 import userReducer from '../features/user/userSlice';
 import {loadState, saveState} from './localStorage'; 
@@ -8,7 +9,8 @@ export const store = configureStore({
   persistedState,
   reducer: {
     tasks: taskReducer,
-    user: userReducer
+    user: userReducer,
+    notes: notesSlice
   },
   middleware: getDefaultMiddleware({
     serializableCheck: false,

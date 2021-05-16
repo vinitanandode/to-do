@@ -11,10 +11,15 @@ import {
        deleteStateTask
 } from '../features/task/taskSlice';
 import {selectUserName, selectPhoto, selectEmail} from '../features/user/userSlice';
+import {setNotes, selectNotes} from '../features/notes/notesSlice';
 import { useDispatch } from 'react-redux';
 import {useSelector} from 'react-redux';
-import TextField from '@material-ui/core/TextField';
-import DeleteRounded from '@material-ui/icons/DeleteRounded';
+import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+import RichTextEditor from 'react-rte';
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import { EditorState } from "draft-js";
 
 function Tasks() {
 
@@ -24,6 +29,9 @@ function Tasks() {
     const userName = useSelector(selectUserName);
     const userEmail = useSelector(selectEmail);
     const userPhoto = useSelector(selectPhoto);
+    const noteslist = useSelector(selectNotes);
+    RichTextEditor.createEmptyValue();
+    const editorState = EditorState.createEmpty();
 
     //const [tasklist, settasklist] = useState([]);
 
@@ -46,9 +54,29 @@ function Tasks() {
                                     })
             console.log("response load", response);              
             dispatch(setTasks(response));            
-            console.log("response state", tasklist); 
+            console.log("response state", tasklist);                        
         };
         getDbTasks();
+
+        const getDbNotes = async () => {
+            let tempnotelist = [];            
+            const response = await db.collection("vinita.nandode@gmail.com")                                                                      
+                                    .doc("notes")
+                                    .collection("notes")
+                                    .get()
+                                    .then((snap) => {
+                                        snap.forEach(function(doc) {
+                                            const tdata = {id: doc.id, ...doc.data()}
+                                            tempnotelist.push(tdata);
+                                        });
+                                        return tempnotelist;
+                                    })
+            console.log("response load note", response);              
+            dispatch(setNotes(response));         
+            console.log("response state note", noteslist);                        
+        };
+        getDbNotes();
+
     }, [])
 
     const OnKeyPressEvent = (e) => {
@@ -71,7 +99,7 @@ function Tasks() {
     }
 
     const onCheckboxClick = id => e => {        
-        console.log("checkbox event",userEmail);
+        console.log("checkbox value",e.target.checked);
         console.log(id);
 
         const updateDbStatus = async () => {
@@ -80,11 +108,13 @@ function Tasks() {
                                     })                                                           
         }
         updateDbStatus();   
-        const udpateDbTask = {
+        let udpateDbTask = {
             completed: e.target.checked,
             id: id
-        } 
+        };
+        console.log("updated task",udpateDbTask); 
         dispatch(updateTaskStatus(udpateDbTask));  
+        console.log("checkbox event after checked",udpateDbTask);
     }
 
     const deleteTask = (id) => {
@@ -101,8 +131,28 @@ function Tasks() {
         dispatch(deleteStateTask(taskDeleted)); 
     }
 
+    const updateNote = (e) =>{
+        console.log("test update",e);
+    }
+
     return (
-        <Nav>                      
+        <Nav>   
+            <FilterContainer>
+                <FilterWrap>
+                    <img src="/images/home.png"/>
+                    <a>Home</a>                                     
+                </FilterWrap>
+                <FilterWrap>
+                    <img src="/images/done.png"/>
+                    <a>All Tasks</a>
+                    <div>{tasklist.length}</div>
+                </FilterWrap>
+                <FilterWrap>
+                    <img src="/images/done.png"/>
+                    <a>Completed</a>
+                    <div>{tasklist.filter(a => a.completed === true).length}</div>
+                </FilterWrap>
+            </FilterContainer>                  
             <Container>            
                 <TaskBar>                             
                     <Input
@@ -114,7 +164,7 @@ function Tasks() {
                         <img src="/images/clear.png" alt="Clear Text"/>  
                     </Icon>
                 </TaskBar>                               
-                <TaskList> 
+                <TaskList>                
                     {                          
                        tasklist && tasklist.map((task) => (
                         <Wrap key={task.id}>
@@ -130,11 +180,48 @@ function Tasks() {
                             </ActionContainer>
                         </Wrap>
                         ))                                                                  
-                    }                               
+                    }                        
                 </TaskList>
             </Container>
             <NotesContainer>
+                <Tabs>
+                    <TabList>
+                    {
+                        noteslist && noteslist.map((note) => (
+                            <Tab key={note.id}>{note.title}</Tab>
+                        ))
+                    }
+                    </TabList>
+                    {
+                       noteslist && noteslist.map((note) => (
+                            <TabPanel>
+                                {/* <input type="text" value={note.text} onChange={updateNote}/> */}
+                                {/* <RichTextEditor value={note.text} onChange={updateNote}/> */}                                
+                                    <Editor
+                                    wrapperClassName="demo-wrapper"
+                                    editorClassName="demo-editor"
+                                    onEditorStateChange={updateNote}
+                                    />                                    
+                            </TabPanel>
+                        )) 
+                    }                    
+                </Tabs>
+                {/* <Tabs>
+                    <TabList>
+                    <Tab>Title 1</Tab>
+                    <Tab>Title 2</Tab>
+                    </TabList>
 
+                    <TabPanel>
+                        <RichTextEditor
+                            value={this.state.value}
+                            onChange={this.onChange}
+                        />
+                    </TabPanel>
+                    <TabPanel>
+                    <h2>Any content 2</h2>
+                    </TabPanel>
+                </Tabs> */}
             </NotesContainer>
         </Nav>
     )
@@ -143,34 +230,21 @@ function Tasks() {
 export default Tasks;
 
 const Nav = styled.div`    
-    
+    display: flex;
     background-color: grey;
-    min-height: calc(100vh - 50px);
-    padding: 0 calc(3.5vw + 5px);
+    min-height: calc(100vh - 50px);    
     overflow: hidden;
     position:relative;
+    
 `
 
 const Container = styled.div`    
-    padding: 10px 10px;
-    /* width: calc(100vw- 30px); */
+    padding: 10px 10px;    
     width: 50%;
     display: flex;
     flex-direction: column;
     margin-top: 5px;    
-    align-items: center;
-`
-
-const Menu = styled.div`
-    background-color: black;
-    width: 80px;
-    min-height: calc(100vh - 50px);
-    flex-direction: column;
-
-    img {
-        width: 25px;
-        padding: 0px 0px 10px 13px;        
-    }
+    align-items: center;     
 `
 
 const TaskBar = styled.div`
@@ -189,10 +263,8 @@ const TaskBar = styled.div`
       }
 `
 
-const Input = styled.input`
-    /* min-width: 50px; */
-    min-height: 25px;
-    /* width: calc(100vw - 150px); */
+const Input = styled.input`    
+    min-height: 25px;    
     background-color: transparent;    
     border: 0;
     flex: 1 0;
@@ -219,8 +291,7 @@ const Icon = styled.div`
 
     img {
         width: 25px;
-        height: 25px;
-        
+        height: 25px;        
     }
 `
 
@@ -231,11 +302,12 @@ const TaskTitle = styled.div`
 
 const TaskList = styled.div`
     border: 1px thin;
-    background-color: rgba(249, 249, 249, 0.8);;
+    background-color: rgba(249, 249, 249, 0.8);
     padding: 5px 5px;
     margin: 10px;
-    width: 100%;
-    height: 100%;
+    width: 100%;    
+    height: 70vh;
+    overflow: scroll;
     border-radius: 10px;    
     position: relative;
 `
@@ -264,4 +336,40 @@ const ActionContainer = styled.div`
 `
 const NotesContainer = styled.div`
     width: 50%;
+    background-color: rgba(249, 249, 249, 0.8);;
+    margin: 15px;
+    border-radius: 10px;
+`
+
+const FilterContainer = styled.div`
+    width: 180px;
+    background-color: rgba(249, 249, 249, 0.8);    
+    margin-right: 10px;
+    flex-direction: column;
+    display: flex;      
+`
+
+const FilterWrap = styled.div`
+    font-size: 12px;
+    padding: 5px 10px;    
+    letter-spacing: 2px;
+    align-items: center;
+    display: flex;
+    border-bottom: 1px double;
+    border-radius: 5px;
+    cursor: pointer;
+
+    img {
+        margin: 5px;
+        width: 15px;
+        height: 15px;
+    }
+
+    div{                    
+        padding: 0;
+        display: flex;
+        flex:1;
+        justify-content: flex-end;
+        text-align: center;
+    }
 `

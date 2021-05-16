@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Login from './components/Login';
 
 function App() {
-  return (                  
+  return (                   
       <Router>            
         <Switch>
             <Route path="/login">
@@ -15,7 +15,7 @@ function App() {
                 <Todo/>                     
             </Route>
         </Switch>                             
-      </Router>       
+      </Router>           
   );
 }
 
