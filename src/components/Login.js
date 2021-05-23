@@ -28,7 +28,7 @@ function Login() {
         })
       }, [])
     
-    const logIn = () => {
+    const logIn = () => {        
         auth.signInWithPopup(provider)
         .then((result) => {
             let user = result.user

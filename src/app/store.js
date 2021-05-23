@@ -3,6 +3,7 @@ import notesSlice from '../features/notes/notesSlice';
 import taskReducer from '../features/task/taskSlice';
 import userReducer from '../features/user/userSlice';
 import {loadState, saveState} from './localStorage'; 
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 const persistedState = loadState();
 export const store = configureStore({
@@ -11,14 +12,15 @@ export const store = configureStore({
     tasks: taskReducer,
     user: userReducer,
     notes: notesSlice
-  },
+  },  
+  composeWithDevTools,
   middleware: getDefaultMiddleware({
     serializableCheck: false,
-  })
+  })  
 });
 
 store.subscribe(() =>{
-  saveState(store.getState());
+  saveState({user: store.getState().user});
 })
 
 // import { createStore, applyMiddleware } from 'redux'

@@ -68,5 +68,7 @@ export const selectNewTask = (state) => {
         dateadded: state.tasks.taskDateAdded
     }
 }
+export const selectCompletedTasks = (state) => state.tasks.taskList.filter((e) => { return e.completed === true});
+export const selectPendingTasks = (state) => state.tasks.taskList.filter((e) => { return e.completed === false});
 
 export default taskSlice.reducer;
