@@ -206,21 +206,29 @@ function Tasks() {
           <MenuWrap>
             <a>
               <span>All Tasks</span>
-              <img></img>
+              <span>3</span>
             </a>
           </MenuWrap>
           <MenuWrap>
             <a>
               <span>Completed</span>
-              <img></img>
+              <span>5</span>
             </a>
           </MenuWrap>
         </Menu>
       </LeftSide>
       <Main>
-        Main
-        <TaskBar></TaskBar>
-        <TaskList></TaskList>
+        <TaskBar>
+          <div>
+            <input type="text" placeholder="Enter Task" />
+          </div>
+        </TaskBar>
+        <TaskList>
+          <a>
+            <input type="checkbox"></input>
+            Brush
+          </a>
+        </TaskList>
       </Main>
     </Container>
     //         <Nav>
@@ -294,33 +302,36 @@ export default Tasks;
 const Container = styled.div`
   display: grid;
   grid-template-areas: "leftside main";
-  margin: 25px 0;
+  grid-template-columns: 25% 75%;
   column-gap: 25px;
-  /* border: 1px solid; */
+  width: 1128px;
+  padding: 25px 0;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 const LeftSide = styled.div`
-  grid-area: "leftside";
-  margin: 5px 0 8px 20px;
-  /* border: 1px solid; */
+  grid-area: leftside;
+  border: 1px solid rgb(255, 255, 255);
   text-align: center;
   background-color: #fff;
-  border-radius: 5px;
+  border-radius: 12px;
   transition: box-shadow 83ms;
+  border: none;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 15%), 0 0 0 rgb(0 0 0 / 20%);
 `;
 
 const ContactCard = styled.div`
   border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-  padding: 12px 12px 16px;
-  border-radius: 12px;
+  padding-bottom: 15px;
 `;
 
 const ContactBackground = styled.div`
   background: url("/images/card-bg.svg");
   background-position: center;
-  background-size: 462px;
+  background-size: 400px;
   height: 54px;
-  margin: -12px -12px 0;
 `;
 
 const Photo = styled.div`
@@ -346,23 +357,44 @@ const Menu = styled.div`
 `;
 
 const MenuWrap = styled.div`
-  display: flex;
-  justify-content: space-between;
   padding: 4px 12px;
 
   a {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+  }
 
-    span {
-      display: flex;
-      align-items: left;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+  }
+`;
+
+const Main = styled.div`
+  grid-area: "main";
+`;
+
+const TaskBar = styled.div`
+  background-color: #fff;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 15%), 0 0 0 rgb(0 0 0 / 20%);
+  margin-bottom: 8px;
+
+  div {
+    padding: 10px 10px;
+
+    input {
+      border: none;
+
+      &:focus {
+        outline: none;
+      }
     }
   }
 `;
 
-const Main = styled.div``;
-
-const TaskBar = styled.div``;
-
-const TaskList = styled.div``;
+const TaskList = styled.div`
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 15%), 0 0 0 rgb(0 0 0 / 20%);
+`;
