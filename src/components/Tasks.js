@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import styled from "styled-components";
-import db from "../firebase";
+import db,{ auth, provider} from "../firebase";
 import { 
        addTask, 
        setTasks, 
@@ -10,7 +10,7 @@ import {
        updateTaskStatus,
        deleteStateTask
 } from '../features/task/taskSlice';
-import {selectUserName, selectPhoto, selectEmail} from '../features/user/userSlice';
+import {selectUserName, selectPhoto, selectEmail, setSignOut} from '../features/user/userSlice';
 import {setNotes, selectNotes} from '../features/notes/notesSlice';
 import { useDispatch } from 'react-redux';
 import {useSelector} from 'react-redux';
@@ -20,6 +20,8 @@ import RichTextEditor from 'react-rte';
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { EditorState } from "draft-js";
+import { useHistory } from 'react-router-dom';
+
 
 function Tasks() {
 
@@ -32,6 +34,7 @@ function Tasks() {
     const noteslist = useSelector(selectNotes);
     RichTextEditor.createEmptyValue();
     const editorState = EditorState.createEmpty();
+    const history = useHistory()
 
     //const [tasklist, settasklist] = useState([]);
 
@@ -135,15 +138,33 @@ function Tasks() {
         console.log("test update",e);
     }
 
+    const logOut = () =>{
+        auth.signOut()
+            .then( () => {
+            dispatch(setSignOut());
+            history.push("/login");
+            })
+        history.push("/login");
+    }
+
     return (
         <Nav>   
             <FilterContainer>
+                <UserContainer>
+                    <UserImage>
+                        {/* <img src="/images/card-bg.svg"/> */}
+                        <img src={userPhoto}/>
+                    </UserImage>
+                    <UserInfo>
+                        Welcome <br></br> {userName} !
+                    </UserInfo>
+                </UserContainer>
                 <FilterWrap>
                     <img src="/images/home.png"/>
                     <a>Home</a>                                     
                 </FilterWrap>
                 <FilterWrap>
-                    <img src="/images/done.png"/>
+                    <img src="/images/alltasks.png"/>
                     <a>All Tasks</a>
                     <div>{tasklist.length}</div>
                 </FilterWrap>
@@ -151,6 +172,10 @@ function Tasks() {
                     <img src="/images/done.png"/>
                     <a>Completed</a>
                     <div>{tasklist.filter(a => a.completed === true).length}</div>
+                </FilterWrap>
+                <FilterWrap onClick={logOut}>
+                    <img src="/images/logout.png"/>
+                    <a>Log out</a>                    
                 </FilterWrap>
             </FilterContainer>                  
             <Container>            
@@ -182,47 +207,7 @@ function Tasks() {
                         ))                                                                  
                     }                        
                 </TaskList>
-            </Container>
-            <NotesContainer>
-                <Tabs>
-                    <TabList>
-                    {
-                        noteslist && noteslist.map((note) => (
-                            <Tab key={note.id}>{note.title}</Tab>
-                        ))
-                    }
-                    </TabList>
-                    {
-                       noteslist && noteslist.map((note) => (
-                            <TabPanel>
-                                {/* <input type="text" value={note.text} onChange={updateNote}/> */}
-                                {/* <RichTextEditor value={note.text} onChange={updateNote}/> */}                                
-                                    <Editor
-                                    wrapperClassName="demo-wrapper"
-                                    editorClassName="demo-editor"
-                                    onEditorStateChange={updateNote}
-                                    />                                    
-                            </TabPanel>
-                        )) 
-                    }                    
-                </Tabs>
-                {/* <Tabs>
-                    <TabList>
-                    <Tab>Title 1</Tab>
-                    <Tab>Title 2</Tab>
-                    </TabList>
-
-                    <TabPanel>
-                        <RichTextEditor
-                            value={this.state.value}
-                            onChange={this.onChange}
-                        />
-                    </TabPanel>
-                    <TabPanel>
-                    <h2>Any content 2</h2>
-                    </TabPanel>
-                </Tabs> */}
-            </NotesContainer>
+            </Container>            
         </Nav>
     )
 }
@@ -240,21 +225,22 @@ const Nav = styled.div`
 
 const Container = styled.div`    
     padding: 10px 10px;    
-    width: 50%;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    margin-top: 5px;    
-    align-items: center;     
+    margin-top: 25px;    
+    align-items: center;  
+      
 `
 
 const TaskBar = styled.div`
     border: 3px solid rgba(249, 249, 249, 0.1);
-    background-color: rgba(249, 249, 249, 0.8);;
+    background-color: white;
     align-items: center;
     display: flex;
     justify-content: center;
     padding: 5px;  
-    width: 100%;      
+    width: 80%;      
     border-radius: 10px;
     
     &:hover {
@@ -268,6 +254,7 @@ const Input = styled.input`
     background-color: transparent;    
     border: 0;
     flex: 1 0;
+    font-size: 15px;
 
     &:focus {
         outline: none;
@@ -305,7 +292,7 @@ const TaskList = styled.div`
     background-color: rgba(249, 249, 249, 0.8);
     padding: 5px 5px;
     margin: 10px;
-    width: 100%;    
+    width: 80%;    
     height: 70vh;
     overflow: scroll;
     border-radius: 10px;    
@@ -342,9 +329,11 @@ const NotesContainer = styled.div`
 `
 
 const FilterContainer = styled.div`
-    width: 180px;
-    background-color: rgba(249, 249, 249, 0.8);    
-    margin-right: 10px;
+    width: 450px;
+    height: 90%;
+    background-color: white;    
+    margin: 30px;
+    border-radius: 12px;
     flex-direction: column;
     display: flex;      
 `
@@ -355,14 +344,18 @@ const FilterWrap = styled.div`
     letter-spacing: 2px;
     align-items: center;
     display: flex;
-    border-bottom: 1px double;
+    /* border-bottom: 1px double; */
     border-radius: 5px;
     cursor: pointer;
 
+    a{
+        font-size:15px;
+    }    
+
     img {
         margin: 5px;
-        width: 15px;
-        height: 15px;
+        width: 20px;
+        height: 20px;
     }
 
     div{                    
@@ -372,4 +365,27 @@ const FilterWrap = styled.div`
         justify-content: flex-end;
         text-align: center;
     }
+`
+
+const UserContainer = styled.div`
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 30px 30px;
+    
+    /* border: 1px solid black; */
+`
+
+const UserImage = styled.div`
+    img{
+    border-radius: 50%;
+    width: 60px;
+    height:60px;
+    }
+`
+
+const UserInfo = styled.div`
+    display: flex;
+    align-items: center;
+    text-align: center;
 `
