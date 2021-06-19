@@ -23,7 +23,7 @@ function Login() {
               photo: user.photoURL
             }))
             console.log("state user name",userName);
-            // history.push("/home")
+            history.push("/home")
           }
         })
       }, [])

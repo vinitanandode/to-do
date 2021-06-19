@@ -7,13 +7,13 @@ import Login from './components/Login';
 function App() {
   return (                   
       <Router>            
-        <Switch>
-            <Route path="/login">
-                <Login/>                    
-            </Route> 
+        <Switch>            
             <Route path="/home" >
                 <Todo/>                     
             </Route>
+            <Route path="/">
+                <Login/>                    
+            </Route> 
         </Switch>                             
       </Router>           
   );

@@ -8,7 +8,9 @@ import {
        selectNewTask, 
        selectTasks, 
        updateTaskStatus,
-       deleteStateTask
+       deleteStateTask,
+       getCompleted,
+       getPending
 } from '../features/task/taskSlice';
 import {selectUserName, selectPhoto, selectEmail, setSignOut} from '../features/user/userSlice';
 import {setNotes, selectNotes} from '../features/notes/notesSlice';
@@ -36,62 +38,72 @@ function Tasks() {
     const editorState = EditorState.createEmpty();
     const history = useHistory()
 
-    //const [tasklist, settasklist] = useState([]);
+    const [tasklistlocal, settasklistlocal] = useState([]);
 
     useEffect(() => { 
         console.log("user name: ",userName);
         console.log("user photo: ",userPhoto);
         console.log("user email: ",userEmail);  
 
-        const getDbTasks = async () => {
-            let templist = [];            
-            const response = await db.collection("vinita.nandode@gmail.com")
-                                    .orderBy('dateadded', 'desc')                                   
-                                    .get()
-                                    .then((snap) => {
-                                        snap.forEach(function(doc) {
-                                            const tdata = {id: doc.id, ...doc.data()}
-                                            templist.push(tdata);
-                                        });
-                                        return templist;
-                                    })
-            console.log("response load", response);              
-            dispatch(setTasks(response));            
-            console.log("response state", tasklist);                        
-        };
         getDbTasks();
-
-        const getDbNotes = async () => {
-            let tempnotelist = [];            
-            const response = await db.collection("vinita.nandode@gmail.com")                                                                      
-                                    .doc("notes")
-                                    .collection("notes")
-                                    .get()
-                                    .then((snap) => {
-                                        snap.forEach(function(doc) {
-                                            const tdata = {id: doc.id, ...doc.data()}
-                                            tempnotelist.push(tdata);
-                                        });
-                                        return tempnotelist;
-                                    })
-            console.log("response load note", response);              
-            dispatch(setNotes(response));         
-            console.log("response state note", noteslist);                        
-        };
-        getDbNotes();
+        // settasklistlocal(tasklist); 
+        console.log("local list", tasklistlocal);
+        
+        // getDbNotes();
 
     }, [])
+
+    // const getDbNotes = async () => {
+    //     let tempnotelist = [];            
+    //     const response = await db.collection((userEmail)
+    //                             .doc("notes")
+    //                             .collection("taskList")
+    //                             .get()
+    //                             .then((snap) => {
+    //                                 snap.forEach(function(doc) {
+    //                                     const tdata = {id: doc.id, ...doc.data()}
+    //                                     tempnotelist.push(tdata);
+    //                                 });
+    //                                 return tempnotelist;
+    //                             })
+    //     console.log("response load note", response);              
+    //     dispatch(setNotes(response));         
+    //     console.log("response state note", noteslist);                        
+    // }
+
+    const getDbTasks = async () => {
+        let templist = [];            
+        const response = await db.collection(userEmail)
+                                .doc("tasks")
+                                .collection("taskList")
+                                .orderBy('dateadded', 'desc')                                   
+                                .get()
+                                .then((snap) => {
+                                    snap.forEach(function(doc) {
+                                            const tdata = {id: doc.id, ...doc.data()}
+                                        templist.push(tdata);
+                                    });
+                                    return templist;
+                                })
+        console.log("response load", response);              
+        dispatch(setTasks(response));   
+        settasklistlocal(tasklist);                 
+        console.log("response state local", tasklistlocal);                        
+    }
 
     const OnKeyPressEvent = (e) => {
         if(e.key === "Enter"){
             const addDbTask = async () => {
                 console.log("key press newtask", newTask);
-                const response = await db.collection("vinita.nandode@gmail.com").add(newTask);
+                const response = await db.collection(userEmail).doc("tasks").collection("taskList").add(newTask);
                 console.log("key press response", response.id);  
                 newTask.id = response.id;              
-                dispatch(addTask(newTask));   
+                dispatch(addTask(newTask));  
+                
             }
             addDbTask();
+            // settasklistlocal(tasklist);  
+            console.log("key press local", tasklist);           
             e.target.value = '';                          
         }            
     }   
@@ -106,7 +118,7 @@ function Tasks() {
         console.log(id);
 
         const updateDbStatus = async () => {
-            const response = await db.collection("vinita.nandode@gmail.com").doc(id).update({
+            const response = await db.collection(userEmail).doc("tasks").collection("taskList").doc(id).update({
                                         completed: e.target.checked
                                     })                                                           
         }
@@ -124,7 +136,7 @@ function Tasks() {
         console.log("clicked");
         console.log(id);
         const deleteDbTask = async () => {
-            const response = await db.collection("vinita.nandode@gmail.com").doc(id).delete();                                                           
+            const response = await db.collection(userEmail).doc("tasks").collection("taskList").doc(id).delete();                                                           
         }
         deleteDbTask(); 
         const taskDeleted = {            
@@ -139,12 +151,31 @@ function Tasks() {
     }
 
     const logOut = () =>{
+        console.log("logout");
         auth.signOut()
             .then( () => {
             dispatch(setSignOut());
             history.push("/login");
             })
-        history.push("/login");
+        history.push("/");
+    }
+
+    const getCompletedTasks = () => {
+        console.log("complete click"); 
+        // let newTaskList = [...tasklist];            
+        // newTaskList = newTaskList.filter(a => a.completed === true);
+        // console.log("completed task", newTaskList);        
+        // settasklistlocal(newTaskList)            
+        dispatch(getCompleted());
+    }
+
+    const getPendingTasks = () => {
+        console.log("pending click");  
+        // let newTaskList = [...tasklist];            
+        // newTaskList = newTaskList.filter(a => a.completed === false);
+        // console.log("completed task", newTaskList);        
+        // settasklistlocal(newTaskList)              
+        dispatch(getPending());
     }
 
     return (
@@ -159,16 +190,17 @@ function Tasks() {
                         Welcome <br></br> {userName} !
                     </UserInfo>
                 </UserContainer>
-                <FilterWrap>
-                    <img src="/images/home.png"/>
-                    <a>Home</a>                                     
-                </FilterWrap>
-                <FilterWrap>
+                <FilterWrap onClick={getDbTasks}> 
                     <img src="/images/alltasks.png"/>
-                    <a>All Tasks</a>
-                    <div>{tasklist.length}</div>
+                    <a>All Tasks</a>  
+                    <div>{tasklist.length}</div>                                   
                 </FilterWrap>
-                <FilterWrap>
+                <FilterWrap onClick={getPendingTasks}>
+                    <img src="/images/pending.png"/>
+                    <a>Pending Tasks</a>
+                    <div>{tasklist.filter(a => a.completed === false).length}</div>
+                </FilterWrap>
+                <FilterWrap onClick={getCompletedTasks}>
                     <img src="/images/done.png"/>
                     <a>Completed</a>
                     <div>{tasklist.filter(a => a.completed === true).length}</div>
@@ -240,7 +272,7 @@ const TaskBar = styled.div`
     display: flex;
     justify-content: center;
     padding: 5px;  
-    width: 80%;      
+    width: 90%;      
     border-radius: 10px;
     
     &:hover {
@@ -289,10 +321,10 @@ const TaskTitle = styled.div`
 
 const TaskList = styled.div`
     border: 1px thin;
-    background-color: rgba(249, 249, 249, 0.8);
+    background-color: white;
     padding: 5px 5px;
     margin: 10px;
-    width: 80%;    
+    width: 90%;    
     height: 70vh;
     overflow: scroll;
     border-radius: 10px;    
@@ -302,12 +334,16 @@ const TaskList = styled.div`
 const Wrap = styled.div`
     border: 1px solid rgba(249, 249, 249, 0.1);
     border-radius: 10px; 
-    background-color: rgb(186,189,194);
+    /* background-color: rgb(186,189,194); */
     display: flex;     
     padding: 5px;  
     position: obsolute;     
     margin: 10px;
-    align-items: center;   
+    align-items: center; 
+    border-radius: 16px;
+background: linear-gradient(145deg, #ffffff, #e6e6e6);
+box-shadow:  5px 5px 10px #a6a6a6,
+             -5px -5px 10px #ffffff;  
     
 `
 const ActionContainer = styled.div`         
@@ -332,7 +368,7 @@ const FilterContainer = styled.div`
     width: 450px;
     height: 90%;
     background-color: white;    
-    margin: 30px;
+    margin: 30px 15px 30px 30px;
     border-radius: 12px;
     flex-direction: column;
     display: flex;      

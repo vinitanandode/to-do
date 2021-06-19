@@ -1,7 +1,7 @@
 import { createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
-    taskList: [],
+    taskList: [],    
     taskId: "",
     taskTitle: "",
     taskCompleted: "",
@@ -18,7 +18,8 @@ const taskSlice = createSlice({
             state.taskList.sort(function(x, y) {                
                 // false values first
                 return (x.completed === y.completed)? 0 : x.completed? 1 : -1;
-            });                       
+            });      
+            state.completedTaskList = state.taskList.filter(a => a.completed === true)                 
         },  
         addTask: (state, action) => {
             state.taskList.unshift(action.payload);
@@ -54,11 +55,23 @@ const taskSlice = createSlice({
             let index = action.payload.id;
             newTaskList.splice(index,1);
             state.taskList = newTaskList;
+        },
+        getCompleted: (state, action) => {
+            let newTaskList = [...state.taskList];            
+            newTaskList = newTaskList.filter(a => a.completed === true);
+            console.log("new task", newTaskList);
+            state.taskList = newTaskList;
+        },
+        getPending: (state, action) => { 
+            let newTaskList = [...state.taskList];            
+            newTaskList = newTaskList.filter(a => a.completed === false);
+            console.log("new task", newTaskList);
+            state.taskList = newTaskList;
         }
     }
 })
 
-export const {setTasks, addTask, updateTaskName, updateTaskStatus, deleteStateTask} = taskSlice.actions;
+export const {setTasks, addTask, updateTaskName, updateTaskStatus, deleteStateTask, getCompleted, getPending} = taskSlice.actions;
 
 export const selectTasks = (state) => state.tasks.taskList;
 export const selectNewTask = (state) => {
