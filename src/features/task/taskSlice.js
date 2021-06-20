@@ -40,8 +40,8 @@ const taskSlice = createSlice({
             });
         },
         updateTaskStatus: (state, action) => {
-            let newTaskList = [...state.taskList];            
-            let index = newTaskList.findIndex((obj => obj.id === action.payload.id));
+            const newTaskList = [...state.taskList];            
+            const index = newTaskList.findIndex((obj => obj.id === action.payload.id));
             newTaskList[index].completed = action.payload.completed;                                        
             state.taskList = newTaskList; 
             state.taskList.sort((a,b) => b.completed - a.completed);   
@@ -51,8 +51,8 @@ const taskSlice = createSlice({
             });           
         },
         deleteStateTask: (state, action) => {
-            let newTaskList = [...state.taskList];
-            let index = action.payload.id;
+            const newTaskList = [...state.taskList];
+            const index = action.payload.id;
             newTaskList.splice(index,1);
             state.taskList = newTaskList;
         },

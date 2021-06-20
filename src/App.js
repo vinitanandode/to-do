@@ -1,12 +1,12 @@
 import React from 'react';
 import './App.css';
 import Todo from './components/Todo'
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Login from './components/Login';
 
 function App() {
-  return (                   
-      <Router>            
+  return (
+      <Router>
         <Switch>            
             <Route path="/home" >
                 <Todo/>                     

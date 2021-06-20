@@ -19,6 +19,6 @@ export const saveState = (state) =>{
         localStorage.setItem('state',serializedState);
     }
     catch(err){
-        
+        return undefined;
     }
 }

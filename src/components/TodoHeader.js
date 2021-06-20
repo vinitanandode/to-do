@@ -1,28 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
-import {
-  selectUserName,
-  selectPhoto,
-  setSignOut,
-} from "../features/user/userSlice";
-import { auth } from "../firebase";
-import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
 
 function TodoHeader() {
-  const dispatch = useDispatch();
-  const history = useHistory();
-  const userName = useSelector(selectUserName);
-  const userPhoto = useSelector(selectPhoto);
-
-  const signOut = () => {
-    auth.signOut().then(() => {
-      dispatch(setSignOut());
-      history.push("/login");
-    });
-  };
-
   return (
     <Container>
       <Logo>{/* <img src="/images/menu2.png" alt="Menu"/> */}</Logo>
@@ -62,14 +41,3 @@ const Title = styled.div`
   padding-bottom: 5px;
 `;
 
-const User = styled.div`
-  align-content: center;
-
-  img {
-    width: 40px;
-    height: 40px;
-    padding: 0px 10px;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-`;

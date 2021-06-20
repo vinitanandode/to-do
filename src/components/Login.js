@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react'
 import styled from 'styled-components';
-import db, { auth, provider} from '../firebase';
+import { auth, provider} from '../firebase';
 import { useDispatch, useSelector } from 'react-redux';
-import {selectUserName, selectEmail, selectPhoto, setUserLogin} from '../features/user/userSlice'
+import {selectUserName, setUserLogin} from '../features/user/userSlice'
 import { useHistory } from 'react-router-dom';
 
 function Login() {
@@ -31,7 +31,7 @@ function Login() {
     const logIn = () => {
         auth.signInWithPopup(provider)
         .then((result) => {
-            let user = result.user
+            const user = result.user
             dispatch(setUserLogin({
                 name: user.displayName,
                 email: user.email,

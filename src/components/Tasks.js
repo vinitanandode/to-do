@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import db, { auth, provider } from "../firebase";
+import db, { auth } from "../firebase";
 import {
   addTask,
   setTasks,
@@ -9,8 +9,8 @@ import {
   selectTasks,
   updateTaskStatus,
   deleteStateTask,
-  getCompleted,
-  getPending,
+  // getCompleted,
+  // getPending,
 } from "../features/task/taskSlice";
 import {
   selectUserName,
@@ -18,15 +18,10 @@ import {
   selectEmail,
   setSignOut,
 } from "../features/user/userSlice";
-import { setNotes, selectNotes } from "../features/notes/notesSlice";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import { useDispatch, useSelector} from "react-redux";
 import "react-tabs/style/react-tabs.css";
 import RichTextEditor from "react-rte";
-import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState } from "draft-js";
 import { useHistory } from "react-router-dom";
 
 function Tasks() {
@@ -36,9 +31,7 @@ function Tasks() {
   const userName = useSelector(selectUserName);
   const userEmail = useSelector(selectEmail);
   const userPhoto = useSelector(selectPhoto);
-  const noteslist = useSelector(selectNotes);
   RichTextEditor.createEmptyValue();
-  const editorState = EditorState.createEmpty();
   const history = useHistory();
 
   const [tasklistlocal, settasklistlocal] = useState([]);
@@ -74,7 +67,7 @@ function Tasks() {
   // }
 
   const getDbTasks = async () => {
-    let templist = [];
+    const templist = [];
     const response = await db
       .collection(userEmail)
       .doc("tasks")
@@ -108,8 +101,8 @@ function Tasks() {
         dispatch(addTask(newTask));
       };
       addDbTask();
-      // settasklistlocal(tasklist);
-      console.log("key press local", tasklist);
+      settasklistlocal([...tasklist, newTask]);
+      console.log("key press local", tasklistlocal);
       e.target.value = "";
     }
   };
@@ -124,7 +117,7 @@ function Tasks() {
     console.log(id);
 
     const updateDbStatus = async () => {
-      const response = await db
+      await db
         .collection(userEmail)
         .doc("tasks")
         .collection("taskList")
@@ -134,7 +127,7 @@ function Tasks() {
         });
     };
     updateDbStatus();
-    let udpateDbTask = {
+    const udpateDbTask = {
       completed: e.target.checked,
       id: id,
     };
@@ -147,24 +140,20 @@ function Tasks() {
     console.log("clicked");
     console.log(id);
     const deleteDbTask = async () => {
-      const response = await db
+      await db
         .collection(userEmail)
         .doc("tasks")
         .collection("taskList")
         .doc(id)
         .delete();
     };
-    deleteDbTask();
+    deleteDbTask()
     const taskDeleted = {
-      id: id,
-    };
-    console.log("task to be deleted from state", taskDeleted);
-    dispatch(deleteStateTask(taskDeleted));
-  };
-
-  const updateNote = (e) => {
-    console.log("test update", e);
-  };
+      id: id
+    }
+    console.log('task to be deleted from state', taskDeleted)
+    dispatch(deleteStateTask(taskDeleted))
+  }
 
   const logOut = () => {
     console.log("logout");
@@ -177,20 +166,20 @@ function Tasks() {
 
   const getCompletedTasks = () => {
     console.log("complete click");
-    // let newTaskList = [...tasklist];
-    // newTaskList = newTaskList.filter(a => a.completed === true);
-    // console.log("completed task", newTaskList);
-    // settasklistlocal(newTaskList)
-    dispatch(getCompleted());
+    let newTaskList = [...tasklist];
+    newTaskList = newTaskList.filter(a => a.completed === true);
+    console.log("completed task", newTaskList);
+    settasklistlocal(newTaskList)
+    // dispatch(getCompleted());
   };
 
   const getPendingTasks = () => {
     console.log("pending click");
-    // let newTaskList = [...tasklist];
-    // newTaskList = newTaskList.filter(a => a.completed === false);
-    // console.log("completed task", newTaskList);
-    // settasklistlocal(newTaskList)
-    dispatch(getPending());
+    let newTaskList = [...tasklist];
+    newTaskList = newTaskList.filter(a => a.completed === false);
+    console.log("pending task", newTaskList);
+    settasklistlocal(newTaskList)
+    // dispatch(getPending());
   };
 
   return (
@@ -208,17 +197,17 @@ function Tasks() {
         <FilterWrap onClick={getDbTasks}>
           <img src="/images/alltasks.png" alt="All Tasks" />
           <a>All Tasks</a>
-          <div>{tasklist.length}</div>
+          {/* <div>{tasklist.length}</div> */}
         </FilterWrap>
         <FilterWrap onClick={getPendingTasks}>
           <img src="/images/pending.png" alt="Pending Tasks" />
           <a>Pending Tasks</a>
-          <div>{tasklist.filter((a) => a.completed === false).length}</div>
+          {/* <div>{tasklist.filter((a) => a.completed === false).length}</div> */}
         </FilterWrap>
         <FilterWrap onClick={getCompletedTasks}>
           <img src="/images/done.png" alt="Completed Tasks" />
           <a>Completed</a>
-          <div>{tasklist.filter((a) => a.completed === true).length}</div>
+          {/* <div>{tasklist.filter((a) => a.completed === true).length}</div> */}
         </FilterWrap>
         <FilterWrap onClick={logOut}>
           <img src="/images/logout.png" alt="Log out" />
@@ -237,8 +226,8 @@ function Tasks() {
           </Icon>
         </TaskBar>
         <TaskList>
-          {tasklist &&
-            tasklist.map((task) => (
+          {tasklistlocal &&
+            tasklistlocal.map((task) => (
               <Wrap key={task.id}>
                 <InputCheckBox
                   type="checkbox"
@@ -369,12 +358,6 @@ const ActionContainer = styled.div`
     width: 20px;
     height: 20px;
   }
-`;
-const NotesContainer = styled.div`
-  width: 50%;
-  background-color: rgba(249, 249, 249, 0.8);
-  margin: 15px;
-  border-radius: 10px;
 `;
 
 const FilterContainer = styled.div`
