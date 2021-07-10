@@ -1,28 +1,23 @@
 import React, {useEffect} from 'react'
 import styled from 'styled-components';
 import { auth, provider} from '../firebase';
-import { useDispatch, useSelector } from 'react-redux';
-import {selectUserName, setUserLogin} from '../features/user/userSlice'
+import { useDispatch } from 'react-redux';
+import { setUserLogin} from '../features/user/userSlice'
 import { useHistory } from 'react-router-dom';
 
 function Login() {
 
     const dispatch = useDispatch()
-    const userName = useSelector(selectUserName);
-    // const userEmail = useSelector(selectEmail);
-    // const userPhoto = useSelector(selectPhoto);
     const history = useHistory()
 
     useEffect(()=>{
         auth.onAuthStateChanged(async (user) =>{
           if(user){
-            console.log("user",user);  
             dispatch(setUserLogin({
               name: user.displayName,
               email: user.email,
               photo: user.photoURL
             }))
-            console.log("state user name",userName);
             history.push("/home")
           }
         })

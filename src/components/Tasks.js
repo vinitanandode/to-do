@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import db, { auth } from "../firebase";
 import {
@@ -9,8 +9,8 @@ import {
   selectTasks,
   updateTaskStatus,
   deleteStateTask,
-  // getCompleted,
-  // getPending,
+  getCompleted,
+  getPending,
 } from "../features/task/taskSlice";
 import {
   selectUserName,
@@ -34,37 +34,10 @@ function Tasks() {
   RichTextEditor.createEmptyValue();
   const history = useHistory();
 
-  const [tasklistlocal, settasklistlocal] = useState([]);
-
   useEffect(() => {
-    console.log("user name: ", userName);
-    console.log("user photo: ", userPhoto);
-    console.log("user email: ", userEmail);
-
     getDbTasks();
-    // settasklistlocal(tasklist);
-    console.log("local list", tasklistlocal);
-
-    // getDbNotes();
   }, []);
 
-  // const getDbNotes = async () => {
-  //     let tempnotelist = [];
-  //     const response = await db.collection((userEmail)
-  //                             .doc("notes")
-  //                             .collection("taskList")
-  //                             .get()
-  //                             .then((snap) => {
-  //                                 snap.forEach(function(doc) {
-  //                                     const tdata = {id: doc.id, ...doc.data()}
-  //                                     tempnotelist.push(tdata);
-  //                                 });
-  //                                 return tempnotelist;
-  //                             })
-  //     console.log("response load note", response);
-  //     dispatch(setNotes(response));
-  //     console.log("response state note", noteslist);
-  // }
 
   const getDbTasks = async () => {
     const templist = [];
@@ -81,41 +54,30 @@ function Tasks() {
         });
         return templist;
       });
-    console.log("response load", response);
-    dispatch(setTasks(response));
-    settasklistlocal(tasklist);
-    console.log("response state local", tasklistlocal);
+    dispatch(setTasks(response));    
   };
 
   const OnKeyPressEvent = (e) => {
     if (e.key === "Enter") {
       const addDbTask = async () => {
-        console.log("key press newtask", newTask);
         const response = await db
           .collection(userEmail)
           .doc("tasks")
           .collection("taskList")
-          .add(newTask);
-        console.log("key press response", response.id);
+          .add(newTask);        
         newTask.id = response.id;
         dispatch(addTask(newTask));
       };
       addDbTask();
-      settasklistlocal([...tasklist, newTask]);
-      console.log("key press local", tasklistlocal);
       e.target.value = "";
     }
   };
 
-  const onChangeEvent = (e) => {
-    console.log(e.target.value);
+  const onChangeEvent = (e) => {    
     dispatch(updateTaskName(e.target.value));
   };
 
   const onCheckboxClick = (id) => (e) => {
-    console.log("checkbox value", e.target.checked);
-    console.log(id);
-
     const updateDbStatus = async () => {
       await db
         .collection(userEmail)
@@ -131,14 +93,10 @@ function Tasks() {
       completed: e.target.checked,
       id: id,
     };
-    console.log("updated task", udpateDbTask);
     dispatch(updateTaskStatus(udpateDbTask));
-    console.log("checkbox event after checked", udpateDbTask);
   };
 
   const deleteTask = (id) => {
-    console.log("clicked");
-    console.log(id);
     const deleteDbTask = async () => {
       await db
         .collection(userEmail)
@@ -151,12 +109,10 @@ function Tasks() {
     const taskDeleted = {
       id: id
     }
-    console.log('task to be deleted from state', taskDeleted)
     dispatch(deleteStateTask(taskDeleted))
   }
 
   const logOut = () => {
-    console.log("logout");
     auth.signOut().then(() => {
       dispatch(setSignOut());
       history.push("/login");
@@ -165,29 +121,18 @@ function Tasks() {
   };
 
   const getCompletedTasks = () => {
-    console.log("complete click");
-    let newTaskList = [...tasklist];
-    newTaskList = newTaskList.filter(a => a.completed === true);
-    console.log("completed task", newTaskList);
-    settasklistlocal(newTaskList)
-    // dispatch(getCompleted());
+    dispatch(getCompleted());
   };
 
   const getPendingTasks = () => {
-    console.log("pending click");
-    let newTaskList = [...tasklist];
-    newTaskList = newTaskList.filter(a => a.completed === false);
-    console.log("pending task", newTaskList);
-    settasklistlocal(newTaskList)
-    // dispatch(getPending());
+    dispatch(getPending());
   };
 
   return (
     <Nav>
       <FilterContainer>
         <UserContainer>
-          <UserImage>
-            {/* <img src="/images/card-bg.svg"/> */}
+          <UserImage>            
             <img src={userPhoto} />
           </UserImage>
           <UserInfo>
@@ -226,8 +171,8 @@ function Tasks() {
           </Icon>
         </TaskBar>
         <TaskList>
-          {tasklistlocal &&
-            tasklistlocal.map((task) => (
+          {tasklist &&
+            tasklist.map((task) => (
               <Wrap key={task.id}>
                 <InputCheckBox
                   type="checkbox"
@@ -376,7 +321,6 @@ const FilterWrap = styled.div`
   letter-spacing: 2px;
   align-items: center;
   display: flex;
-  /* border-bottom: 1px double; */
   border-radius: 5px;
   cursor: pointer;
 
@@ -404,8 +348,6 @@ const UserContainer = styled.div`
   align-items: center;
   flex-direction: column;
   padding: 30px 30px;
-
-  /* border: 1px solid black; */
 `;
 
 const UserImage = styled.div`

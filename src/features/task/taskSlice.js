@@ -1,5 +1,6 @@
 import { createSlice} from '@reduxjs/toolkit';
 
+
 const initialState = {
     taskList: [],    
     taskId: "",
@@ -12,7 +13,7 @@ const taskSlice = createSlice({
     name:"tasks",
     initialState,
     reducers:{
-        setTasks: (state, action) => {
+        setTasks: (state, action) => {            
             state.taskList = action.payload;   
             state.taskList.sort((a,b) => b.completed - a.completed);                      
             state.taskList.sort(function(x, y) {                
@@ -59,13 +60,11 @@ const taskSlice = createSlice({
         getCompleted: (state, action) => {
             let newTaskList = [...state.taskList];            
             newTaskList = newTaskList.filter(a => a.completed === true);
-            console.log("new task", newTaskList);
             state.taskList = newTaskList;
         },
         getPending: (state, action) => { 
             let newTaskList = [...state.taskList];            
             newTaskList = newTaskList.filter(a => a.completed === false);
-            console.log("new task", newTaskList);
             state.taskList = newTaskList;
         }
     }
