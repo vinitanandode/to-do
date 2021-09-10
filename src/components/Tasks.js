@@ -9,8 +9,8 @@ import {
   selectTasks,
   updateTaskStatus,
   deleteStateTask,
-  getCompleted,
-  getPending,
+  // getCompleted,
+  // getPending,
 } from "../features/task/taskSlice";
 import {
   selectUserName,
@@ -18,7 +18,7 @@ import {
   selectEmail,
   setSignOut,
 } from "../features/user/userSlice";
-import { useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "react-tabs/style/react-tabs.css";
 import RichTextEditor from "react-rte";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -38,7 +38,6 @@ function Tasks() {
     getDbTasks();
   }, []);
 
-
   const getDbTasks = async () => {
     const templist = [];
     const response = await db
@@ -54,7 +53,45 @@ function Tasks() {
         });
         return templist;
       });
-    dispatch(setTasks(response));    
+    dispatch(setTasks(response));
+  };
+
+  const getPendingDbTasks = async () => {
+    const templist = [];
+    const response = await db
+      .collection(userEmail)
+      .doc("tasks")
+      .collection("taskList")
+      .where("completed", "==", false)
+      .orderBy("dateadded", "desc")
+      .get()
+      .then((snap) => {
+        snap.forEach(function (doc) {
+          const tdata = { id: doc.id, ...doc.data() };
+          templist.push(tdata);
+        });
+        return templist;
+      });
+    dispatch(setTasks(response));
+  };
+
+  const getCompletedDbTasks = async () => {
+    const templist = [];
+    const response = await db
+      .collection(userEmail)
+      .doc("tasks")
+      .collection("taskList")
+      .where("completed", "==", true)
+      .orderBy("dateadded", "desc")
+      .get()
+      .then((snap) => {
+        snap.forEach(function (doc) {
+          const tdata = { id: doc.id, ...doc.data() };
+          templist.push(tdata);
+        });
+        return templist;
+      });
+    dispatch(setTasks(response));
   };
 
   const OnKeyPressEvent = (e) => {
@@ -64,7 +101,7 @@ function Tasks() {
           .collection(userEmail)
           .doc("tasks")
           .collection("taskList")
-          .add(newTask);        
+          .add(newTask);
         newTask.id = response.id;
         dispatch(addTask(newTask));
       };
@@ -73,7 +110,7 @@ function Tasks() {
     }
   };
 
-  const onChangeEvent = (e) => {    
+  const onChangeEvent = (e) => {
     dispatch(updateTaskName(e.target.value));
   };
 
@@ -97,20 +134,22 @@ function Tasks() {
   };
 
   const deleteTask = (id) => {
+    console.log("deleed task:", id);
     const deleteDbTask = async () => {
-      await db
-        .collection(userEmail)
+      db.collection(userEmail)
         .doc("tasks")
         .collection("taskList")
         .doc(id)
         .delete();
     };
-    deleteDbTask()
+    deleteDbTask();
+    console.log("delete id from db");
     const taskDeleted = {
-      id: id
-    }
-    dispatch(deleteStateTask(taskDeleted))
-  }
+      id: id,
+    };
+    console.log("delete id", taskDeleted);
+    dispatch(deleteStateTask(taskDeleted));
+  };
 
   const logOut = () => {
     auth.signOut().then(() => {
@@ -121,18 +160,20 @@ function Tasks() {
   };
 
   const getCompletedTasks = () => {
-    dispatch(getCompleted());
+    getCompletedDbTasks();
+    // dispatch(getCompleted());
   };
 
   const getPendingTasks = () => {
-    dispatch(getPending());
+    getPendingDbTasks();
+    // dispatch(getPending());
   };
 
   return (
     <Nav>
       <FilterContainer>
         <UserContainer>
-          <UserImage>            
+          <UserImage>
             <img src={userPhoto} />
           </UserImage>
           <UserInfo>
@@ -323,6 +364,10 @@ const FilterWrap = styled.div`
   display: flex;
   border-radius: 5px;
   cursor: pointer;
+
+  &:hover {
+    background-color: grey;
+  }
 
   a {
     font-size: 15px;
