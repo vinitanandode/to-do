@@ -1,21 +1,28 @@
-import React from 'react';
-import './App.css';
-import Todo from './components/Todo'
+import React from "react";
+import "./App.css";
+import Todo from "./components/Todo";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Login from './components/Login';
+import Login from "./components/Login";
+import Register from "./components/Register";
 
 function App() {
   return (
-      <Router>
-        <Switch>            
-            <Route path="/home" >
-                <Todo/>                     
-            </Route>
-            <Route path="/">
-                <Login/>                    
-            </Route> 
-        </Switch>                             
-      </Router>           
+    <Router>
+      <Switch>
+        <Route path="/home">
+          <Todo />
+        </Route>
+        <Route path="/login">
+          <Login />
+        </Route>
+        <Route path="/register">
+          <Register />
+        </Route>
+        <Route path="/">
+          <Login />
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 

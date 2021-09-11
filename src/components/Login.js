@@ -41,6 +41,11 @@ function Login() {
     });
   };
 
+  const signUp = () => {
+    console.log("signuip");
+    history.push("/register");
+  };
+
   return (
     <Container>
       <Welcome>
@@ -67,6 +72,12 @@ function Login() {
             <span>Get overview of pending and completed tasks</span>
           </a>
         </Features>
+        <LoginWrap onClick={signUp}>
+          <a>
+            {/* <img src={imgGoogle} /> */}
+            <span>Sign Up</span>
+          </a>
+        </LoginWrap>
         <LoginWrap onClick={logIn}>
           <a>
             <img src={imgGoogle} />
@@ -121,7 +132,7 @@ const LoginWrap = styled.div`
   width: 50%;
   /* border-radius: 5px; */
   padding: 5px 10px;
-  margin: 10px;
+  margin: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
