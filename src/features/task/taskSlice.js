@@ -1,3 +1,4 @@
+// import { CompareArrowsOutlined } from "@material-ui/icons";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -6,6 +7,8 @@ const initialState = {
   taskTitle: "",
   taskCompleted: "",
   taskDateAdded: "",
+  taskDateModified: "",
+  taskImportant: "",
 };
 
 const taskSlice = createSlice({
@@ -34,7 +37,9 @@ const taskSlice = createSlice({
     updateTaskName: (state, action) => {
       state.taskTitle = action.payload;
       state.taskCompleted = false;
+      state.taskImportant = false;
       state.taskDateAdded = Date().toLocaleString();
+      state.taskDateModified = Date().toLocaleString();
       state.taskList.sort((a, b) => b.completed - a.completed);
       state.taskList.sort(function (x, y) {
         // false values first
@@ -47,12 +52,42 @@ const taskSlice = createSlice({
         (obj) => obj.id === action.payload.id
       );
       newTaskList[index].completed = action.payload.completed;
+      newTaskList[index].datemodified = Date().toLocaleString();
       state.taskList = newTaskList;
       state.taskList.sort((a, b) => b.completed - a.completed);
       state.taskList.sort(function (x, y) {
         // false values first
         return x.completed === y.completed ? 0 : x.completed ? 1 : -1;
       });
+    },
+    updateTaskTitle: (state, action) => {
+      const newTaskList = [...state.taskList];
+      const index = newTaskList.findIndex(
+        (obj) => obj.id === action.payload.id
+      );
+      newTaskList[index].title = action.payload.title;
+      newTaskList[index].datemodified = Date().toLocaleString();
+      state.taskList = newTaskList;
+      state.taskList.sort((a, b) => b.completed - a.completed);
+      state.taskList.sort(function (x, y) {
+        // false values first
+        return x.completed === y.completed ? 0 : x.completed ? 1 : -1;
+      });
+    },
+    updateTaskPriority: (state, action) => {
+      const newTaskList = [...state.taskList];
+      const index = newTaskList.findIndex(
+        (obj) => obj.id === action.payload.id
+      );
+      newTaskList[index].important = action.payload.important;
+      newTaskList[index].datemodified = Date().toLocaleString();
+      state.taskList = newTaskList;
+      state.taskList.sort((a, b) => b.completed - a.completed);
+      state.taskList.sort(function (x, y) {
+        // false values first
+        return x.completed === y.completed ? 0 : x.completed ? 1 : -1;
+      });
+      console.log("imp state task update", state.taskList);
     },
     deleteStateTask: (state, action) => {
       const newTaskList = [...state.taskList];
@@ -78,6 +113,8 @@ export const {
   addTask,
   updateTaskName,
   updateTaskStatus,
+  updateTaskTitle,
+  updateTaskPriority,
   deleteStateTask,
   getCompleted,
   getPending,
@@ -89,6 +126,8 @@ export const selectNewTask = (state) => {
     title: state.tasks.taskTitle,
     completed: state.tasks.taskCompleted,
     dateadded: state.tasks.taskDateAdded,
+    datemodified: state.tasks.taskDateModified,
+    important: state.tasks.taskImportant,
   };
 };
 

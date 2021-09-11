@@ -8,6 +8,8 @@ import {
   selectNewTask,
   selectTasks,
   updateTaskStatus,
+  updateTaskTitle,
+  updateTaskPriority,
   deleteStateTask,
   // getCompleted,
   // getPending,
@@ -29,6 +31,8 @@ import imgPending from "../images/pending.png";
 import imgDone from "../images/done.png";
 import imgLogout from "../images/logout.png";
 import imgClear from "../images/clear.png";
+// import imgEdit from "../images/edit.png";
+import imgImp from "../images/imp.png";
 
 function Tasks() {
   const dispatch = useDispatch();
@@ -102,6 +106,7 @@ function Tasks() {
 
   const OnKeyPressEvent = (e) => {
     if (e.key === "Enter") {
+      console.log("new task", newTask);
       const addDbTask = async () => {
         const response = await db
           .collection(userEmail)
@@ -139,6 +144,27 @@ function Tasks() {
     dispatch(updateTaskStatus(udpateDbTask));
   };
 
+  const onTitleChange = (id) => (e) => {
+    if (e.key === "Enter") {
+      const updateDbTask = async () => {
+        await db
+          .collection(userEmail)
+          .doc("tasks")
+          .collection("taskList")
+          .doc(id)
+          .update({
+            title: e.target.value,
+          });
+      };
+      updateDbTask();
+      const udpateDbTask = {
+        title: e.target.value,
+        id: id,
+      };
+      dispatch(updateTaskTitle(udpateDbTask));
+    }
+  };
+
   const deleteTask = (id) => {
     console.log("deleed task:", id);
     const deleteDbTask = async () => {
@@ -155,6 +181,26 @@ function Tasks() {
     };
     console.log("delete id", taskDeleted);
     dispatch(deleteStateTask(taskDeleted));
+  };
+
+  const importantTask = (id, imp) => {
+    console.log("imp id", id);
+    const updateDbTask = async () => {
+      await db
+        .collection(userEmail)
+        .doc("tasks")
+        .collection("taskList")
+        .doc(id)
+        .update({
+          important: !imp,
+        });
+    };
+    updateDbTask();
+    const udpateDbTask = {
+      important: !imp,
+      id: id,
+    };
+    dispatch(updateTaskPriority(udpateDbTask));
   };
 
   const logOut = () => {
@@ -186,25 +232,35 @@ function Tasks() {
             Welcome <br></br> {userName} !
           </UserInfo>
         </UserContainer>
-        <FilterWrap onClick={getDbTasks}>
-          <img src={imgAllTasks} alt="All Tasks" />
-          <a>All Tasks</a>
-          {/* <div>{tasklist.length}</div> */}
-        </FilterWrap>
-        <FilterWrap onClick={getPendingTasks}>
-          <img src={imgPending} alt="Pending Tasks" />
-          <a>Pending Tasks</a>
-          {/* <div>{tasklist.filter((a) => a.completed === false).length}</div> */}
-        </FilterWrap>
-        <FilterWrap onClick={getCompletedTasks}>
-          <img src={imgDone} alt="Completed Tasks" />
-          <a>Completed</a>
-          {/* <div>{tasklist.filter((a) => a.completed === true).length}</div> */}
-        </FilterWrap>
-        <FilterWrap onClick={logOut}>
-          <img src={imgLogout} alt="Log out" />
-          <a>Log out</a>
-        </FilterWrap>
+        <Filter>
+          <FilterWrap onClick={getDbTasks} type="radio">
+            <a>
+              <img src={imgAllTasks} alt="All Tasks" />
+              All Tasks
+            </a>
+            {/* <div>{tasklist.length}</div> */}
+          </FilterWrap>
+          <FilterWrap onClick={getPendingTasks}>
+            <a>
+              <img src={imgPending} alt="Pending Tasks" />
+              Pending Tasks
+            </a>
+            {/* <div>{tasklist.filter((a) => a.completed === false).length}</div> */}
+          </FilterWrap>
+          <FilterWrap onClick={getCompletedTasks}>
+            <a>
+              <img src={imgDone} alt="Completed Tasks" />
+              Completed
+            </a>
+            {/* <div>{tasklist.filter((a) => a.completed === true).length}</div> */}
+          </FilterWrap>
+          <FilterWrap onClick={logOut}>
+            <a>
+              <img src={imgLogout} alt="Log out" />
+              Log out
+            </a>
+          </FilterWrap>
+        </Filter>
       </FilterContainer>
       <Container>
         <TaskBar>
@@ -220,20 +276,38 @@ function Tasks() {
         <TaskList>
           {tasklist &&
             tasklist.map((task) => (
-              <Wrap key={task.id}>
+              <Wrap key={task.id} important={task.important}>
                 <InputCheckBox
                   type="checkbox"
                   id={task.id}
                   defaultChecked={task.completed}
                   onChange={onCheckboxClick(task.id)}
                 />
-                <TaskTitle>{task.title}</TaskTitle>
+                <TaskTitle
+                  type="text"
+                  defaultValue={task.title}
+                  onKeyPress={onTitleChange(task.id)}
+                  important={task.important}
+                ></TaskTitle>
                 <ActionContainer>
-                  <img
-                    src={imgDelete}
-                    onClick={() => deleteTask(task.id)}
-                    alt="Delete Task"
-                  />
+                  <Action>
+                    <a>
+                      <img
+                        src={imgImp}
+                        onClick={() => importantTask(task.id, task.important)}
+                        alt="Importamt Task"
+                      />
+                    </a>
+                  </Action>
+                  <Action>
+                    <a>
+                      <img
+                        src={imgDelete}
+                        onClick={() => deleteTask(task.id)}
+                        alt="Delete Task"
+                      />
+                    </a>
+                  </Action>
                 </ActionContainer>
               </Wrap>
             ))}
@@ -311,8 +385,15 @@ const Icon = styled.div`
   }
 `;
 
-const TaskTitle = styled.div`
+const TaskTitle = styled.input`
   padding-left: 5px;
+  border: 0;
+  text-decoration: none;
+  background-color: ${(props) => (props.important ? "red" : "white")};
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 const TaskList = styled.div`
@@ -328,18 +409,19 @@ const TaskList = styled.div`
 `;
 
 const Wrap = styled.div`
+  background-color: ${(props) => (props.important ? "red" : "white")};
   border: 1px solid rgba(249, 249, 249, 0.1);
   border-radius: 10px;
-  /* background-color: rgb(186,189,194); */
   display: flex;
   padding: 5px;
   position: obsolute;
   margin: 10px;
   align-items: center;
   border-radius: 16px;
-  background: linear-gradient(145deg, #ffffff, #e6e6e6);
+  /* background: linear-gradient(145deg, #ffffff, #e6e6e6); */
   box-shadow: 5px 5px 10px #a6a6a6, -5px -5px 10px #ffffff;
 `;
+
 const ActionContainer = styled.div`
   display: flex;
   flex: 1;
@@ -347,6 +429,20 @@ const ActionContainer = styled.div`
   cursor: pointer;
 
   img {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+const Action = styled.div`
+  a {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  a img {
+    padding: 2px;
+    margin: 2px;
     width: 20px;
     height: 20px;
   }
@@ -362,7 +458,11 @@ const FilterContainer = styled.div`
   display: flex;
 `;
 
-const FilterWrap = styled.div`
+const Filter = styled.ul`
+  padding: 0;
+`;
+
+const FilterWrap = styled.li`
   font-size: 12px;
   padding: 5px 10px;
   letter-spacing: 2px;
@@ -370,27 +470,32 @@ const FilterWrap = styled.div`
   display: flex;
   border-radius: 5px;
   cursor: pointer;
-
-  &:hover {
-    background-color: grey;
-  }
+  margin: 0;
 
   a {
     font-size: 15px;
-  }
-
-  img {
-    margin: 5px;
-    width: 20px;
-    height: 20px;
-  }
-
-  div {
     padding: 0;
     display: flex;
     flex: 1;
-    justify-content: flex-end;
     text-align: center;
+    align-items: center;
+
+    img {
+      margin: 5px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:active {
+      background: red;
+      /* box-shadow: 20px 20px 60px #adadad, -20px -20px 60px #ffffff; */
+    }
+
+    &:hover {
+      /* background-color: grey; */
+      background: #ffffff;
+      box-shadow: 20px 20px 60px #adadad, -20px -20px 60px #ffffff;
+    }
   }
 `;
 
