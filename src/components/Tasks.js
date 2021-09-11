@@ -23,6 +23,12 @@ import "react-tabs/style/react-tabs.css";
 import RichTextEditor from "react-rte";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { useHistory } from "react-router-dom";
+import imgDelete from "../images/delete.png";
+import imgAllTasks from "../images/alltasks.png";
+import imgPending from "../images/pending.png";
+import imgDone from "../images/done.png";
+import imgLogout from "../images/logout.png";
+import imgClear from "../images/clear.png";
 
 function Tasks() {
   const dispatch = useDispatch();
@@ -181,22 +187,22 @@ function Tasks() {
           </UserInfo>
         </UserContainer>
         <FilterWrap onClick={getDbTasks}>
-          <img src="/images/alltasks.png" alt="All Tasks" />
+          <img src={imgAllTasks} alt="All Tasks" />
           <a>All Tasks</a>
           {/* <div>{tasklist.length}</div> */}
         </FilterWrap>
         <FilterWrap onClick={getPendingTasks}>
-          <img src="/images/pending.png" alt="Pending Tasks" />
+          <img src={imgPending} alt="Pending Tasks" />
           <a>Pending Tasks</a>
           {/* <div>{tasklist.filter((a) => a.completed === false).length}</div> */}
         </FilterWrap>
         <FilterWrap onClick={getCompletedTasks}>
-          <img src="/images/done.png" alt="Completed Tasks" />
+          <img src={imgDone} alt="Completed Tasks" />
           <a>Completed</a>
           {/* <div>{tasklist.filter((a) => a.completed === true).length}</div> */}
         </FilterWrap>
         <FilterWrap onClick={logOut}>
-          <img src="/images/logout.png" alt="Log out" />
+          <img src={imgLogout} alt="Log out" />
           <a>Log out</a>
         </FilterWrap>
       </FilterContainer>
@@ -208,7 +214,7 @@ function Tasks() {
             onChange={onChangeEvent}
           />
           <Icon>
-            <img src="/images/clear.png" alt="Clear Text" />
+            <img src={imgClear} alt="Clear Text" />
           </Icon>
         </TaskBar>
         <TaskList>
@@ -224,7 +230,7 @@ function Tasks() {
                 <TaskTitle>{task.title}</TaskTitle>
                 <ActionContainer>
                   <img
-                    src="/images/delete.png"
+                    src={imgDelete}
                     onClick={() => deleteTask(task.id)}
                     alt="Delete Task"
                   />
