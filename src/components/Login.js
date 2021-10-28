@@ -180,12 +180,14 @@ const Banner = styled.div`
   font-size: 30px;
   font-weight: 1500;
   margin-bottom: 10px;
+  /* text-align: center; */
 `;
 
 const WelcomeMessage = styled.div`
   margin-bottom: 10px;
   font-weight: 500;
   font-size: 15px;
+  /* text-align: center; */
   /* display: flex; */
 
   @media (max-width: 756px) {
