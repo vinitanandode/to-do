@@ -37,15 +37,15 @@ function Register() {
       </Welcome>
       <Content>
         <Banner>
-          <span>Sign Up</span>
+          <a href="./Login">
+            <span>My to-do list</span>
+          </a>
         </Banner>
-        <WelcomeMessage>
-          Keep up with your tasks and boost your productivity.
-        </WelcomeMessage>
+        <WelcomeMessage>Sign Up</WelcomeMessage>
         <RegisterForm>
           <FormElement>
             <span>Name *</span>
-            <input type="text" id="name"></input>
+            <input type="text" id="name" placeholder="Enter your Name"></input>
           </FormElement>
           <FormElement>
             <span>Email *</span>
@@ -71,12 +71,12 @@ function Register() {
             <span>Phone</span>
             <input type="text" id="phone"></input>
           </FormElement>
-          <LoginWrap onClick={signUp}>
+          <SignupWrap onClick={signUp}>
             <a>
               {/* <img src={imgGoogle} /> */}
               <span>Sign Up</span>
             </a>
-          </LoginWrap>
+          </SignupWrap>
         </RegisterForm>
       </Content>
     </Container>
@@ -89,26 +89,9 @@ const Container = styled.div`
   width: calc(100vw- 30px);
   display: flex;
   margin-top: 5px;
-  /* align-items: center; */
   flex-direction: row;
-  /* justify-content: center; */
 
   @media (max-width: 756px) {
-    flex-direction: column;
-    align-items: center;
-  }
-`;
-
-const Content = styled.div`
-  /* top:0; */
-  margin-top: 60px;
-  padding-right: 20px;
-  /* align-items: center; */
-  /* justify-content: middle; */
-  /* border: 1px solid black; */
-
-  @media (max-width: 756px) {
-    display: flex;
     flex-direction: column;
     align-items: center;
   }
@@ -122,8 +105,46 @@ const Welcome = styled.div`
   }
 `;
 
+const Content = styled.div`
+  margin-top: 60px;
+  padding-right: 20px;
+  width: 100%;
+
+  @media (max-width: 756px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+`;
+
+const Banner = styled.div`
+  font-size: 50px;
+  font-weight: 1500;
+  margin-bottom: 10px;
+
+  a {
+    text-decoration: none;
+  }
+  a:visited {
+    text-decoration: none;
+    color: inherit;
+  }
+`;
+
+const WelcomeMessage = styled.div`
+  margin-bottom: 20px;
+  /* margin-left: 7px; */
+  font-weight: 500;
+  font-size: 30px;
+
+  @media (max-width: 756px) {
+    text-align: center;
+  }
+`;
+
 const RegisterForm = styled.div`
-  margin: 40px 40px;
+  /* margin: 40px 40px; */
+  width: 70%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -136,8 +157,8 @@ const FormElement = styled.div`
   letter-spacing: 1px;
 
   span {
-    width: 50%;
-    padding: 10px;
+    width: 35%;
+    padding: 12px;
   }
 
   input {
@@ -157,8 +178,8 @@ const FormElement = styled.div`
   }
 `;
 
-const LoginWrap = styled.div`
-  width: 70%;
+const SignupWrap = styled.div`
+  width: 50%;
   padding: 5px 10px;
   margin: 20px;
   display: flex;
@@ -189,22 +210,6 @@ const LoginWrap = styled.div`
     background: linear-gradient(145deg, #cacaca, #f0f0f0);
     box-shadow: 10px 10px 28px #9f9f9f, -10px -10px 28px #ffffff;
   }
-`;
-
-const WelcomeMessage = styled.div`
-  margin-bottom: 20px;
-  font-weight: 500;
-  font-size: 25px;
-
-  @media (max-width: 756px) {
-    text-align: center;
-  }
-`;
-
-const Banner = styled.div`
-  font-size: 50px;
-  font-weight: 1500;
-  margin-bottom: 10px;
 `;
 
 export default Register;
