@@ -33,6 +33,7 @@ import imgLogout from "../images/logout.png";
 import imgClear from "../images/clear.png";
 // import imgEdit from "../images/edit.png";
 import imgImp from "../images/imp.png";
+import imgImpRed from "../images/impred.svg";
 
 function Tasks() {
   const dispatch = useDispatch();
@@ -265,12 +266,14 @@ function Tasks() {
       <Container>
         <TaskBar>
           <Input
-            placeholder="Enter task"
+            placeholder="Add task and press enter.."
             onKeyPress={OnKeyPressEvent}
             onChange={onChangeEvent}
           />
           <Icon>
-            <img src={imgClear} alt="Clear Text" />
+            <a title="Clear Text">
+              <img src={imgClear} alt="Clear Text" />
+            </a>
           </Icon>
         </TaskBar>
         <TaskList>
@@ -289,18 +292,28 @@ function Tasks() {
                   onKeyPress={onTitleChange(task.id)}
                   important={task.important}
                 ></TaskTitle>
+                {/* <ToolTip>Tool tip test</ToolTip> */}
                 <ActionContainer>
-                  <Action>
+                  {/* <Action>
                     <a>
                       <img
-                        src={imgImp}
+                        src={imgEdit}
+                        onClick={() => deleteTask(task.id)}
+                        alt="Delete Task"
+                      />
+                    </a>
+                  </Action> */}
+                  <Action>
+                    <a title="Important">
+                      <img
+                        src={task.important ? imgImpRed : imgImp}
                         onClick={() => importantTask(task.id, task.important)}
                         alt="Importamt Task"
                       />
                     </a>
                   </Action>
                   <Action>
-                    <a>
+                    <a title="Delete Task">
                       <img
                         src={imgDelete}
                         onClick={() => deleteTask(task.id)}
@@ -358,6 +371,7 @@ const Input = styled.input`
   border: 0;
   flex: 1 0;
   font-size: 15px;
+  font-family: inherit;
 
   &:focus {
     outline: none;
@@ -368,6 +382,11 @@ const InputCheckBox = styled.input`
   min-width: 15px;
   min-height: 15px;
   background-color: transparent;
+  font-family: inherit;
+
+  &:checked:before {
+    background-color: green;
+  }
 
   &:hover {
     box-shadow: 3px 3px 3px thistle;
@@ -375,26 +394,40 @@ const InputCheckBox = styled.input`
 `;
 
 const Icon = styled.div`
-  flex: 0 0;
-  justify-content: center;
-  cursor: pointer;
-
-  img {
-    width: 25px;
-    height: 25px;
+  a {
+    display: flex;
+    /* flex: 0 0; */
+    justify-content: center;
+    cursor: pointer;
+    img {
+      width: 25px;
+      height: 25px;
+    }
   }
 `;
 
 const TaskTitle = styled.input`
+  width: 80%;
   padding-left: 5px;
   border: 0;
   text-decoration: none;
-  background-color: ${(props) => (props.important ? "red" : "white")};
+  /* background-color: ${(props) => (props.important ? "red" : "white")}; */
+  font-family: inherit;
+  background: linear-gradient(145deg, #e6e6e6, #ffffff);
+  /* box-shadow: 1px 1px 10px #c2c2c2, -1px -1px 10px #ffffff; */
 
   &:focus {
     outline: none;
   }
 `;
+
+// const ToolTip = styled.span`
+//   position: relative;
+//   display: inline-block;
+//   border-bottom: 1px dotted black;
+//   visibility: hidden;
+//   z-index: -1;
+// `;
 
 const TaskList = styled.div`
   border: 1px thin;
@@ -417,9 +450,11 @@ const Wrap = styled.div`
   position: obsolute;
   margin: 10px;
   align-items: center;
-  border-radius: 16px;
+  border-radius: 29px;
   /* background: linear-gradient(145deg, #ffffff, #e6e6e6); */
-  box-shadow: 5px 5px 10px #a6a6a6, -5px -5px 10px #ffffff;
+  /* box-shadow: 5px 5px 10px #a6a6a6, -5px -5px 10px #ffffff; */
+  background: linear-gradient(145deg, #e6e6e6, #ffffff);
+  box-shadow: 1px 1px 10px #c2c2c2, -1px -1px 10px #ffffff;
 `;
 
 const ActionContainer = styled.div`
@@ -464,17 +499,17 @@ const Filter = styled.ul`
 
 const FilterWrap = styled.li`
   font-size: 12px;
-  padding: 5px 10px;
+  padding: 5px 5px;
   letter-spacing: 2px;
   align-items: center;
   display: flex;
   border-radius: 5px;
   cursor: pointer;
-  margin: 0;
+  margin: 2px;
 
   a {
     font-size: 15px;
-    padding: 0;
+    /* padding: 0; */
     display: flex;
     flex: 1;
     text-align: center;
@@ -490,12 +525,15 @@ const FilterWrap = styled.li`
       background: red;
       /* box-shadow: 20px 20px 60px #adadad, -20px -20px 60px #ffffff; */
     }
+  }
 
-    &:hover {
-      /* background-color: grey; */
-      background: #ffffff;
-      box-shadow: 20px 20px 60px #adadad, -20px -20px 60px #ffffff;
-    }
+  &:hover {
+    /* background-color: grey; */
+    /* background: #ffffff; */
+    /* box-shadow: 20px 20px 60px #adadad, -20px -20px 60px #ffffff; */
+    /* background: #ffffff; */
+    /* box-shadow: 1px 1px 10px #c2c2c2, -1px -1px 10px #ffffff; */
+    background: linear-gradient(145deg, #e6e6e6, #ffffff);
   }
 `;
 

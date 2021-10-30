@@ -41,35 +41,52 @@ function Register() {
             <span>My to-do list</span>
           </a>
         </Banner>
-        <WelcomeMessage>Sign Up</WelcomeMessage>
+        <WelcomeMessage>
+          Keep up with your tasks and boost your productivity.
+        </WelcomeMessage>
         <RegisterForm>
           <FormElement>
             <span>Name *</span>
-            <input type="text" id="name" placeholder="Enter your Name"></input>
+            <input
+              type="text"
+              id="name"
+              placeholder="What should we call you?"
+            ></input>
           </FormElement>
           <FormElement>
             <span>Email *</span>
-            <input type="text" onBlur={ValidateEmail()} id="email"></input>
+            <input
+              type="text"
+              onBlur={ValidateEmail()}
+              id="email"
+              placeholder="Your email address?"
+            ></input>
           </FormElement>
           <FormElement>
             <span>Password *</span>
             <input
-              type="text"
+              type="password"
               onBlur={ValidatePassword()}
               id="password"
+              placeholder="Protect your account.."
             ></input>
           </FormElement>
           <FormElement>
             <span>Confirm Password *</span>
             <input
-              type="text"
+              type="password"
               onBlur={ValidateConfirmPassword()}
               id="confirmpassword"
+              placeholder="Confirm password.."
             ></input>
           </FormElement>
           <FormElement>
             <span>Phone</span>
-            <input type="text" id="phone"></input>
+            <input
+              type="text"
+              id="phone"
+              placeholder="Stay connected with us.."
+            ></input>
           </FormElement>
           <SignupWrap onClick={signUp}>
             <a>
@@ -89,7 +106,7 @@ const Container = styled.div`
   width: calc(100vw- 30px);
   display: flex;
   margin-top: 5px;
-  flex-direction: row;
+  /* flex-direction: row; */
 
   @media (max-width: 756px) {
     flex-direction: column;
@@ -98,7 +115,7 @@ const Container = styled.div`
 `;
 
 const Welcome = styled.div`
-  padding: 20px;
+  padding: 55px;
   img {
     width: 500px;
     height: 500px;
@@ -106,7 +123,7 @@ const Welcome = styled.div`
 `;
 
 const Content = styled.div`
-  margin-top: 60px;
+  margin-top: 10px;
   padding-right: 20px;
   width: 100%;
 
@@ -118,7 +135,7 @@ const Content = styled.div`
 `;
 
 const Banner = styled.div`
-  font-size: 50px;
+  font-size: 30px;
   font-weight: 1500;
   margin-bottom: 10px;
 
@@ -135,7 +152,7 @@ const WelcomeMessage = styled.div`
   margin-bottom: 20px;
   /* margin-left: 7px; */
   font-weight: 500;
-  font-size: 30px;
+  font-size: 15px;
 
   @media (max-width: 756px) {
     text-align: center;
@@ -151,23 +168,27 @@ const RegisterForm = styled.div`
 `;
 
 const FormElement = styled.div`
-  margin-bottom: 10px;
+  margin: 10px;
   width: 100%;
   display: flex;
   letter-spacing: 1px;
 
   span {
     width: 35%;
-    padding: 12px;
+    padding: 10px;
+    font-size: 13px;
   }
 
   input {
+    font-size: 13px;
+    font-family: inherit;
     background: linear-gradient(145deg, #e6e6e6, #ffffff);
     box-shadow: 5px 8px 10px #c2c2c2, -8px -8px 15px #ffffff;
     width: 50%;
     border-radius: 29px;
     border: none;
     padding-left: 15px;
+    padding-right: 15px;
 
     &:focus {
       outline: none;
@@ -180,8 +201,8 @@ const FormElement = styled.div`
 
 const SignupWrap = styled.div`
   width: 50%;
-  padding: 5px 10px;
-  margin: 20px;
+  padding: 5px 5px;
+  margin: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -201,7 +222,8 @@ const SignupWrap = styled.div`
     align-items: center;
 
     span {
-      padding: 5px 5px;
+      padding: 3px 5px 3px 5px;
+      font-size: 13px;
     }
   }
 
