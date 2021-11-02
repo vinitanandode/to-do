@@ -1,8 +1,18 @@
+// TODO: Already have an account line, validation on login, verify email address flow
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { auth, provider } from "../firebase";
-import { useDispatch } from "react-redux";
-import { setUserLogin } from "../features/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setUserLogin,
+  selectEmail,
+  selectPassword,
+  setUserEmail,
+  setUserPassword,
+  setErrorMessage,
+  selectErrorMessage,
+  selectIsError,
+} from "../features/user/userSlice";
 import { useHistory } from "react-router-dom";
 import imgBg from "../images/bg.jpg";
 import imgCheck from "../images/check2.png";
@@ -11,11 +21,16 @@ import imgGitHub from "../images/GitHub.png";
 
 function Login() {
   const dispatch = useDispatch();
+  const email = useSelector(selectEmail);
+  const password = useSelector(selectPassword);
+  const isError = useSelector(selectIsError);
+  const errorMessage = useSelector(selectErrorMessage);
   const history = useHistory();
 
   useEffect(() => {
+    setError(false, "");
     auth.onAuthStateChanged(async (user) => {
-      if (user) {
+      if (user && user.emailVerified) {
         dispatch(
           setUserLogin({
             name: user.displayName,
@@ -24,11 +39,20 @@ function Login() {
           })
         );
         history.push("/home");
+      } else {
+        history.push("/");
       }
     });
   }, []);
 
-  const logIn = () => {
+  const setError = (isError, error) => {
+    console.log("erro", error);
+    const errorMessage = error.message;
+    dispatch(setErrorMessage({ isError: isError, errorMessage: errorMessage }));
+  };
+
+  const googleSignUp = () => {
+    setError(false, "");
     auth.signInWithPopup(provider).then((result) => {
       const user = result.user;
       console.log("git user", user);
@@ -43,9 +67,49 @@ function Login() {
     });
   };
 
+  const signIn = () => {
+    setError(false, "");
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        dispatch(
+          setUserLogin({
+            name: user.displayName,
+            email: user.email,
+            photo: user.photoURL,
+          })
+        );
+        console.log("signin user", user);
+        history.push("/home");
+      })
+      .catch((error) => {
+        setError(true, error);
+      });
+  };
+
   const signUp = () => {
+    setError(false, "");
     console.log("signuip");
     history.push("/register");
+  };
+
+  const onEmailChange = (e) => {
+    console.log("values", e.target.value);
+    dispatch(
+      setUserEmail({
+        email: e.target.value,
+      })
+    );
+  };
+
+  const onPasswordChange = (e) => {
+    console.log("values", e.target.value);
+    dispatch(
+      setUserPassword({
+        password: e.target.value,
+      })
+    );
   };
 
   const ValidateEmail = () => (e) => {
@@ -86,12 +150,14 @@ function Login() {
         </Features>
         <Actions>
           <LoginContent>
+            <ErrorMeesage visible={isError}>{errorMessage}</ErrorMeesage>
             <FormElement>
               <span>Email *</span>
               <input
                 type="text"
                 id="name"
                 placeholder="Enter your Email"
+                onChange={onEmailChange}
               ></input>
             </FormElement>
             <FormElement>
@@ -101,11 +167,12 @@ function Login() {
                 onBlur={ValidateEmail()}
                 id="email"
                 placeholder="Enter your Password"
+                onChange={onPasswordChange}
               ></input>
             </FormElement>
-            <SignInWrap onClick={signUp} id="btnSignIn">
+            <SignInWrap onClick={signIn} id="btnSignIn">
               <a>
-                <span>Sign in</span>
+                <span>Sign In</span>
               </a>
             </SignInWrap>
           </LoginContent>
@@ -117,13 +184,13 @@ function Login() {
                 <span>Sign Up</span>
               </a>
             </Wrap>
-            <Wrap onClick={logIn}>
+            <Wrap onClick={googleSignUp}>
               <a>
                 <img src={imgGoogle} />
                 <span>Sign in with Google</span>
               </a>
             </Wrap>
-            <Wrap onClick={logIn}>
+            <Wrap onClick={googleSignUp}>
               <a>
                 <img src={imgGitHub} />
                 <span>Sign in with Git Hub</span>
@@ -215,6 +282,12 @@ const LoginContent = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+`;
+
+const ErrorMeesage = styled.div`
+  font-size: 12px;
+  color: red;
+  display: ${(props) => (props.visible ? "block" : "none")};
 `;
 
 const FormElement = styled.div`

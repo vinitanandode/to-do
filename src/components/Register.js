@@ -1,35 +1,145 @@
+// TODO: already have an account line, validations, verify email address flow, send welcome email flow
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+// import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import imgSignup from "../images/signup2.jpg";
-
-const signUp = () => {
-  console.log("signuip");
-  ValidateAll();
-};
-
-const ValidatePassword = () => (e) => {
-  console.log("text", e.target.value);
-};
-
-const ValidateConfirmPassword = () => (e) => {
-  console.log("text", e.target.value);
-};
-
-const ValidateEmail = () => (e) => {
-  const validRegex =
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  if (e.target.value.match(validRegex)) {
-    console.log("valid email");
-  } else {
-    console.log("invalid email");
-  }
-};
-
-const ValidateAll = () => {
-  console.log("validate all");
-};
+import { auth } from "../firebase";
+import {
+  setUserName,
+  setUserEmail,
+  // setUserPhoto,
+  setUserPassword,
+  setUserConfirmPassword,
+  selectUserName,
+  selectEmail,
+  selectPassword,
+  selectConfirmPassword,
+  setErrorMessage,
+  selectErrorMessage,
+  selectIsError,
+} from "../features/user/userSlice";
 
 function Register() {
+  const dispatch = useDispatch();
+  // const history = useHistory();
+  const name = useSelector(selectUserName);
+  const email = useSelector(selectEmail);
+  const password = useSelector(selectPassword);
+  const isError = useSelector(selectIsError);
+  const errorMessage = useSelector(selectErrorMessage);
+  const confirmPassword = useSelector(selectConfirmPassword);
+
+  const setError = (isError, error) => {
+    console.log("erro", error);
+    const errorMessage = error.message;
+    dispatch(setErrorMessage({ isError: isError, errorMessage: errorMessage }));
+  };
+
+  const signUp = () => {
+    console.log("signuip", email + ": " + password + ": " + name);
+    ValidateAll();
+
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then((userCredentials) => {
+        const user = userCredentials.user;
+        user.sendEmailVerification().then(() => {
+          console.log("email sent");
+        });
+        console.log("new user", user);
+      })
+      .catch((error) => {
+        setError(true, error);
+      });
+  };
+
+  const ValidateUsername = () => (e) => {
+    if (name === "") {
+      setError(true, { message: "Please enter name." });
+    } else {
+      setError(false, "");
+    }
+  };
+
+  const ValidateEmail = () => (e) => {
+    const validRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if (e.target.value.match(validRegex)) {
+      setError(false, "");
+    } else {
+      setError(true, { message: "Please enter valid email." });
+    }
+  };
+
+  const ValidatePassword = () => (e) => {
+    if (password === "") {
+      setError(true, { message: "Please enter password." });
+    } else {
+      setError(false, "");
+    }
+  };
+
+  const ValidateConfirmPassword = () => (e) => {
+    if (confirmPassword === "") {
+      setError(true, { message: "Please enter confirm password." });
+    }
+    if (password !== confirmPassword) {
+      setError(true, {
+        message: "Password & Confirmed Password doesn't match.",
+      });
+    } else {
+      setError(false, "");
+    }
+  };
+
+  const ValidateAll = () => {
+    console.log("validate all");
+  };
+
+  const onNameChange = (e) => {
+    console.log("values", e.target.value);
+    dispatch(
+      setUserName({
+        name: e.target.value,
+      })
+    );
+  };
+
+  const onEmailChange = (e) => {
+    console.log("values", e.target.value);
+    dispatch(
+      setUserEmail({
+        email: e.target.value,
+      })
+    );
+  };
+
+  const onPasswordChange = (e) => {
+    console.log("values", e.target.value);
+    dispatch(
+      setUserPassword({
+        password: e.target.value,
+      })
+    );
+  };
+
+  const onConfirmPasswordChange = (e) => {
+    console.log("values", e.target.value);
+    dispatch(
+      setUserConfirmPassword({
+        confirmPassword: e.target.value,
+      })
+    );
+  };
+
+  // const onPhotoChange = (e) => {
+  //   console.log("values", e.target.name);
+  //   setUserName({
+  //     name: e.target.value,
+  //   });
+  // };
+
   return (
     <Container>
       <Welcome>
@@ -45,21 +155,25 @@ function Register() {
           Keep up with your tasks and boost your productivity.
         </WelcomeMessage>
         <RegisterForm>
-          <FormElement>
+          <ErrorMeesage visible={isError}>{errorMessage}</ErrorMeesage>
+          <FormElement isError={isError}>
             <span>Name *</span>
             <input
               type="text"
-              id="name"
+              name="name"
               placeholder="What should we call you?"
+              onBlur={ValidateUsername()}
+              onChange={onNameChange}
             ></input>
           </FormElement>
-          <FormElement>
+          <FormElement isError={isError}>
             <span>Email *</span>
             <input
               type="text"
               onBlur={ValidateEmail()}
-              id="email"
+              name="email"
               placeholder="Your email address?"
+              onChange={onEmailChange}
             ></input>
           </FormElement>
           <FormElement>
@@ -67,8 +181,9 @@ function Register() {
             <input
               type="password"
               onBlur={ValidatePassword()}
-              id="password"
+              name="password"
               placeholder="Protect your account.."
+              onChange={onPasswordChange}
             ></input>
           </FormElement>
           <FormElement>
@@ -76,24 +191,23 @@ function Register() {
             <input
               type="password"
               onBlur={ValidateConfirmPassword()}
-              id="confirmpassword"
+              name="confirmPassword"
               placeholder="Confirm password.."
+              onChange={onConfirmPasswordChange}
             ></input>
           </FormElement>
-          <FormElement>
-            <span>Phone</span>
-            <input
-              type="text"
-              id="phone"
-              placeholder="Stay connected with us.."
-            ></input>
-          </FormElement>
-          <SignupWrap onClick={signUp}>
+          <SignupWrap onClick={(e) => !isError && signUp} isError={isError}>
             <a>
               {/* <img src={imgGoogle} /> */}
               <span>Sign Up</span>
             </a>
           </SignupWrap>
+          <LoginMessage>
+            Already have an account?{" "}
+            <a href="/">
+              <u>Log in.</u>
+            </a>
+          </LoginMessage>
         </RegisterForm>
       </Content>
     </Container>
@@ -167,6 +281,12 @@ const RegisterForm = styled.div`
   align-items: center;
 `;
 
+const ErrorMeesage = styled.div`
+  font-size: 12px;
+  color: red;
+  display: ${(props) => (props.visible ? "block" : "none")};
+`;
+
 const FormElement = styled.div`
   margin: 10px;
   width: 100%;
@@ -186,6 +306,7 @@ const FormElement = styled.div`
     box-shadow: 5px 8px 10px #c2c2c2, -8px -8px 15px #ffffff;
     width: 50%;
     border-radius: 29px;
+    /* border: 1px solid red; */
     border: none;
     padding-left: 15px;
     padding-right: 15px;
@@ -208,10 +329,12 @@ const SignupWrap = styled.div`
   justify-content: center;
   text-transform: uppercase;
   letter-spacing: 1px;
-  cursor: pointer;
+  pointer-events: ${(props) => (props.isError ? "none" : "auto")};
+  cursor: ${(props) => (props.isError ? "not-allowed" : "pointer")};
   transition: all 250ms ease 0s;
   border-radius: 29px;
-  background: linear-gradient(145deg, #e6e6e6, #ffffff);
+  background: ${(props) =>
+    props.isError ? "#c2c2c2" : "linear-gradient(145deg, #e6e6e6, #ffffff)"};
   box-shadow: 8px 8px 15px #c2c2c2, -8px -8px 15px #ffffff;
 
   @media (max-width: 756px) {
@@ -229,9 +352,13 @@ const SignupWrap = styled.div`
 
   &:hover {
     border-radius: 51px;
-    background: linear-gradient(145deg, #cacaca, #f0f0f0);
+    background: "linear-gradient(145deg, #cacaca, #f0f0f0)";
     box-shadow: 10px 10px 28px #9f9f9f, -10px -10px 28px #ffffff;
   }
+`;
+
+const LoginMessage = styled.div`
+  font-size: 12px;
 `;
 
 export default Register;
