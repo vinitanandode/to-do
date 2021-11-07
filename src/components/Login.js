@@ -28,21 +28,25 @@ function Login() {
   const history = useHistory();
 
   useEffect(() => {
-    setError(false, "");
-    auth.onAuthStateChanged(async (user) => {
-      if (user && user.emailVerified) {
-        dispatch(
-          setUserLogin({
-            name: user.displayName,
-            email: user.email,
-            photo: user.photoURL,
-          })
-        );
-        history.push("/home");
-      } else {
-        history.push("/");
-      }
-    });
+    // setError(false, "");
+    // auth.onAuthStateChanged(async (user) => {
+    //   if (user) {
+    //     if (user.emailVerified) {
+    //       dispatch(
+    //         setUserLogin({
+    //           name: user.displayName,
+    //           email: user.email,
+    //           photo: user.photoURL,
+    //         })
+    //       );
+    //       history.push("/home");
+    //     } else {
+    //       history.push("/verify");
+    //     }
+    //   } else {
+    //     history.push("/");
+    //   }
+    // });
   }, []);
 
   const setError = (isError, error) => {
@@ -73,15 +77,22 @@ function Login() {
       .signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        dispatch(
-          setUserLogin({
-            name: user.displayName,
-            email: user.email,
-            photo: user.photoURL,
-          })
-        );
-        console.log("signin user", user);
-        history.push("/home");
+        if (user) {
+          if (user.emailVerified) {
+            dispatch(
+              setUserLogin({
+                name: user.displayName,
+                email: user.email,
+                photo: user.photoURL,
+              })
+            );
+            history.push("/home");
+          } else {
+            history.push("/verify");
+          }
+        } else {
+          history.push("/");
+        }
       })
       .catch((error) => {
         setError(true, error);

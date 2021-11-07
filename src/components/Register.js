@@ -40,6 +40,7 @@ function Register() {
   const signUp = (e) => {
     console.log("signuip", email + ": " + password + ": " + name);
     e.preventDefault();
+    debugger;
 
     if (ValidateForm()) {
       setError("name", "");
@@ -78,29 +79,27 @@ function Register() {
   const ValidateEmail = () => {
     // debugger;
     let isFormValid = true;
+    const validRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
     if (!email) {
       isFormValid = false;
       // errors["email"] = "Please enter email.";
       setError("email", "Please enter email.");
-    } else {
-      isFormValid = true;
-      setError("email", "");
-    }
-
-    const validRegex =
-      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if (email.match(validRegex)) {
+    } else if (email.match(validRegex)) {
       isFormValid = true;
       setError("email", "");
     } else {
-      isFormValid = false;
+      isFormValid = true;
       setError("email", "Enter valid email.");
     }
+
     // debugger;
     return isFormValid;
   };
 
   const ValidatePassword = () => {
+    debugger;
     let isFormValid = true;
     if (!password) {
       isFormValid = false;
@@ -127,22 +126,18 @@ function Register() {
   };
 
   const ValidatePasswordMatch = () => {
+    debugger;
     let isFormValid = true;
     if (password && confirmPassword && password !== confirmPassword) {
       isFormValid = false;
       // errors["password"] = "Password & Confirm Password doesn't match.";
       setError("password", "Password doesn't match.");
       setError("confirmPassword", "Confirmed Password doesn't match.");
-    } else {
-      isFormValid = true;
-      setError("password", "");
-      setError("confirmPassword", "");
     }
     return isFormValid;
   };
 
   const ValidateForm = () => {
-    let isFormValid = true;
     // debugger;
     // if (name === "") {
     //   isFormValid = false;
@@ -162,11 +157,17 @@ function Register() {
     //   // setError(false, "");
     // }
 
-    isFormValid = ValidateUsername();
-    isFormValid = ValidateEmail();
-    isFormValid = ValidatePassword();
-    isFormValid = ValidateConfirmPassword();
-    isFormValid = ValidatePasswordMatch();
+    let isFormValid = true;
+    debugger;
+    if (
+      !ValidateUsername() ||
+      !ValidateEmail() ||
+      !ValidatePassword() ||
+      !ValidateConfirmPassword() ||
+      !ValidatePasswordMatch()
+    ) {
+      isFormValid = false;
+    }
 
     // if (!password) {
     //   isFormValid = false;
@@ -241,7 +242,7 @@ function Register() {
       </Welcome>
       <Content>
         <Banner>
-          <a href="./Login">
+          <a href="/">
             <span>My to-do list</span>
           </a>
         </Banner>
