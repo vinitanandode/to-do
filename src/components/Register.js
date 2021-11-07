@@ -15,9 +15,9 @@ import {
   selectEmail,
   selectPassword,
   selectConfirmPassword,
-  setErrorMessage,
-  selectErrorMessage,
-  selectIsError,
+  setErrors,
+  selectErrors,
+  // selectIsError,
 } from "../features/user/userSlice";
 
 function Register() {
@@ -26,75 +26,169 @@ function Register() {
   const name = useSelector(selectUserName);
   const email = useSelector(selectEmail);
   const password = useSelector(selectPassword);
-  const isError = useSelector(selectIsError);
-  const errorMessage = useSelector(selectErrorMessage);
+  // const isError = useSelector(selectIsError);
+  const errors = useSelector(selectErrors);
   const confirmPassword = useSelector(selectConfirmPassword);
+  // const [errors, setErrors] = useState({});
 
-  const setError = (isError, error) => {
-    console.log("erro", error);
-    const errorMessage = error.message;
-    dispatch(setErrorMessage({ isError: isError, errorMessage: errorMessage }));
+  const setError = (field, errorMessage) => {
+    console.log("erro", errorMessage);
+    dispatch(setErrors({ field, errorMessage }));
+    // return isError;
   };
 
-  const signUp = () => {
+  const signUp = (e) => {
     console.log("signuip", email + ": " + password + ": " + name);
-    ValidateAll();
+    e.preventDefault();
 
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        user.sendEmailVerification().then(() => {
-          console.log("email sent");
+    if (ValidateForm()) {
+      setError("name", "");
+      setError("email", "");
+      setError("password", "");
+      setError("confirmPassword", "");
+
+      auth
+        .createUserWithEmailAndPassword(email, password)
+        .then((userCredentials) => {
+          const user = userCredentials.user;
+          user.sendEmailVerification().then(() => {
+            console.log("email sent");
+          });
+          console.log("new user", user);
+        })
+        .catch((error) => {
+          // setError(true, error);
         });
-        console.log("new user", user);
-      })
-      .catch((error) => {
-        setError(true, error);
-      });
-  };
-
-  const ValidateUsername = () => (e) => {
-    if (name === "") {
-      setError(true, { message: "Please enter name." });
-    } else {
-      setError(false, "");
     }
   };
 
-  const ValidateEmail = () => (e) => {
+  const ValidateUsername = () => {
+    debugger;
+    let isFormValid = true;
+    if (name === "") {
+      isFormValid = false;
+      setError("name", "Please enter name.");
+    } else {
+      isFormValid = true;
+      setError("name", "");
+    }
+    return isFormValid;
+  };
+
+  const ValidateEmail = () => {
+    // debugger;
+    let isFormValid = true;
+    if (!email) {
+      isFormValid = false;
+      // errors["email"] = "Please enter email.";
+      setError("email", "Please enter email.");
+    } else {
+      isFormValid = true;
+      setError("email", "");
+    }
+
     const validRegex =
       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    if (e.target.value.match(validRegex)) {
-      setError(false, "");
+    if (email.match(validRegex)) {
+      isFormValid = true;
+      setError("email", "");
     } else {
-      setError(true, { message: "Please enter valid email." });
+      isFormValid = false;
+      setError("email", "Enter valid email.");
     }
+    // debugger;
+    return isFormValid;
   };
 
-  const ValidatePassword = () => (e) => {
-    if (password === "") {
-      setError(true, { message: "Please enter password." });
+  const ValidatePassword = () => {
+    let isFormValid = true;
+    if (!password) {
+      isFormValid = false;
+      // errors["password"] = "Please enter password.";
+      setError("password", "Please enter password.");
     } else {
-      setError(false, "");
+      isFormValid = true;
+      setError("password", "");
     }
+    return isFormValid;
   };
 
-  const ValidateConfirmPassword = () => (e) => {
-    if (confirmPassword === "") {
-      setError(true, { message: "Please enter confirm password." });
-    }
-    if (password !== confirmPassword) {
-      setError(true, {
-        message: "Password & Confirmed Password doesn't match.",
-      });
+  const ValidateConfirmPassword = () => {
+    let isFormValid = true;
+    if (!confirmPassword) {
+      isFormValid = false;
+      // errors["confirmPassword"] = "Please enter confirm password.";
+      setError("confirmPassword", "Please enter confirm password.");
     } else {
-      setError(false, "");
+      isFormValid = true;
+      setError("confirmPassword", "");
     }
+    return isFormValid;
   };
 
-  const ValidateAll = () => {
-    console.log("validate all");
+  const ValidatePasswordMatch = () => {
+    let isFormValid = true;
+    if (password && confirmPassword && password !== confirmPassword) {
+      isFormValid = false;
+      // errors["password"] = "Password & Confirm Password doesn't match.";
+      setError("password", "Password doesn't match.");
+      setError("confirmPassword", "Confirmed Password doesn't match.");
+    } else {
+      isFormValid = true;
+      setError("password", "");
+      setError("confirmPassword", "");
+    }
+    return isFormValid;
+  };
+
+  const ValidateForm = () => {
+    let isFormValid = true;
+    // debugger;
+    // if (name === "") {
+    //   isFormValid = false;
+    //   // errors["name"] = "Please enter name.";
+    //   setError("name", "Please enter name.");
+    // }
+
+    // if (!email) {
+    //   isFormValid = false;
+    //   errors["email"] = "Please enter email.";
+    //   setError("email", "Please enter email.");
+    // }
+
+    // const validRegex =
+    //   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    // if (email.match(validRegex)) {
+    //   // setError(false, "");
+    // }
+
+    isFormValid = ValidateUsername();
+    isFormValid = ValidateEmail();
+    isFormValid = ValidatePassword();
+    isFormValid = ValidateConfirmPassword();
+    isFormValid = ValidatePasswordMatch();
+
+    // if (!password) {
+    //   isFormValid = false;
+    //   // errors["password"] = "Please enter password.";
+    //   setError("password", "Please enter password.");
+    // }
+
+    // if (!confirmPassword) {
+    //   isFormValid = false;
+    //   // errors["confirmPassword"] = "Please enter confirm password.";
+    //   setError("confirmPassword", "Please enter confirm password.");
+    // }
+
+    // if (password && confirmPassword && password !== confirmPassword) {
+    //   isFormValid = false;
+    //   // errors["password"] = "Password & Confirm Password doesn't match.";
+    //   setError("password", "Password doesn't match.");
+    //   setError("confirmPassword", "Confirmed Password doesn't match.");
+    // }
+
+    // setErrors(errors);
+    return isFormValid;
   };
 
   const onNameChange = (e) => {
@@ -155,48 +249,59 @@ function Register() {
           Keep up with your tasks and boost your productivity.
         </WelcomeMessage>
         <RegisterForm>
-          <ErrorMeesage visible={isError}>{errorMessage}</ErrorMeesage>
-          <FormElement isError={isError}>
+          <FormElement>
             <span>Name *</span>
-            <input
-              type="text"
-              name="name"
-              placeholder="What should we call you?"
-              onBlur={ValidateUsername()}
-              onChange={onNameChange}
-            ></input>
+            <a>
+              <input
+                type="text"
+                name="name"
+                placeholder="What should we call you?"
+                onBlur={() => ValidateUsername()}
+                onChange={onNameChange}
+              ></input>
+              <ErrorMeesage>{errors.name}</ErrorMeesage>
+            </a>
           </FormElement>
-          <FormElement isError={isError}>
+          <FormElement>
             <span>Email *</span>
-            <input
-              type="text"
-              onBlur={ValidateEmail()}
-              name="email"
-              placeholder="Your email address?"
-              onChange={onEmailChange}
-            ></input>
+            <a>
+              <input
+                type="text"
+                onBlur={() => ValidateEmail()}
+                name="email"
+                placeholder="Your email address?"
+                onChange={onEmailChange}
+              ></input>
+              <ErrorMeesage>{errors.email}</ErrorMeesage>
+            </a>
           </FormElement>
           <FormElement>
             <span>Password *</span>
-            <input
-              type="password"
-              onBlur={ValidatePassword()}
-              name="password"
-              placeholder="Protect your account.."
-              onChange={onPasswordChange}
-            ></input>
+            <a>
+              <input
+                type="password"
+                onBlur={() => ValidatePassword()}
+                name="password"
+                placeholder="Protect your account.."
+                onChange={onPasswordChange}
+              ></input>
+              <ErrorMeesage>{errors.password}</ErrorMeesage>
+            </a>
           </FormElement>
           <FormElement>
             <span>Confirm Password *</span>
-            <input
-              type="password"
-              onBlur={ValidateConfirmPassword()}
-              name="confirmPassword"
-              placeholder="Confirm password.."
-              onChange={onConfirmPasswordChange}
-            ></input>
+            <a>
+              <input
+                type="password"
+                onBlur={() => ValidateConfirmPassword()}
+                name="confirmPassword"
+                placeholder="Confirm password.."
+                onChange={onConfirmPasswordChange}
+              ></input>
+              <ErrorMeesage>{errors.confirmPassword}</ErrorMeesage>
+            </a>
           </FormElement>
-          <SignupWrap onClick={(e) => !isError && signUp} isError={isError}>
+          <SignupWrap onClick={signUp}>
             <a>
               {/* <img src={imgGoogle} /> */}
               <span>Sign Up</span>
@@ -282,13 +387,17 @@ const RegisterForm = styled.div`
 `;
 
 const ErrorMeesage = styled.div`
-  font-size: 12px;
+  padding-top: 2px;
+  font-size: 10px;
+  width: 60%;
+  text-align: right;
+  display: flex;
+  justify-content: right;
   color: red;
-  display: ${(props) => (props.visible ? "block" : "none")};
 `;
 
 const FormElement = styled.div`
-  margin: 10px;
+  margin: 3px;
   width: 100%;
   display: flex;
   letter-spacing: 1px;
@@ -299,25 +408,36 @@ const FormElement = styled.div`
     font-size: 13px;
   }
 
-  input {
-    font-size: 13px;
-    font-family: inherit;
-    background: linear-gradient(145deg, #e6e6e6, #ffffff);
-    box-shadow: 5px 8px 10px #c2c2c2, -8px -8px 15px #ffffff;
-    width: 50%;
-    border-radius: 29px;
-    /* border: 1px solid red; */
-    border: none;
-    padding-left: 15px;
-    padding-right: 15px;
+  a {
+    width: 100%;
 
-    &:focus {
-      outline: none;
-      border-radius: 51px;
-      background: linear-gradient(145deg, #cacaca, #f0f0f0);
-      box-shadow: 10px 10px 28px #9f9f9f, -10px -10px 28px #ffffff;
+    input {
+      font-size: 13px;
+      font-family: inherit;
+      background: linear-gradient(145deg, #e6e6e6, #ffffff);
+      box-shadow: 5px 8px 10px #c2c2c2, -8px -8px 15px #ffffff;
+      width: 60%;
+      height: 35px;
+      border-radius: 29px;
+      /* border: 1px solid red; */
+      border: none;
+      padding-left: 15px;
+      padding-right: 15px;
+
+      &:focus {
+        outline: none;
+      }
     }
   }
+
+  /* &:hover {
+    ${ErrorMeesage} {
+      display: flex;
+      font-size: 10px;
+      text-align: center;
+      color: red;
+    }
+  } */
 `;
 
 const SignupWrap = styled.div`
@@ -329,8 +449,7 @@ const SignupWrap = styled.div`
   justify-content: center;
   text-transform: uppercase;
   letter-spacing: 1px;
-  pointer-events: ${(props) => (props.isError ? "none" : "auto")};
-  cursor: ${(props) => (props.isError ? "not-allowed" : "pointer")};
+  cursor: pointer;
   transition: all 250ms ease 0s;
   border-radius: 29px;
   background: ${(props) =>

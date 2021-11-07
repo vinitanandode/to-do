@@ -9,9 +9,9 @@ import {
   selectPassword,
   setUserEmail,
   setUserPassword,
-  setErrorMessage,
-  selectErrorMessage,
-  selectIsError,
+  // setErrorMessage,
+  // selectErrorMessage,
+  // selectIsError,
 } from "../features/user/userSlice";
 import { useHistory } from "react-router-dom";
 import imgBg from "../images/bg.jpg";
@@ -23,8 +23,8 @@ function Login() {
   const dispatch = useDispatch();
   const email = useSelector(selectEmail);
   const password = useSelector(selectPassword);
-  const isError = useSelector(selectIsError);
-  const errorMessage = useSelector(selectErrorMessage);
+  // const isError = useSelector(selectIsError);
+  // const errorMessage = useSelector(selectErrorMessage);
   const history = useHistory();
 
   useEffect(() => {
@@ -47,8 +47,8 @@ function Login() {
 
   const setError = (isError, error) => {
     console.log("erro", error);
-    const errorMessage = error.message;
-    dispatch(setErrorMessage({ isError: isError, errorMessage: errorMessage }));
+    // const errorMessage = error.message;
+    // dispatch(setErrorMessage({ isError: isError, errorMessage: errorMessage }));
   };
 
   const googleSignUp = () => {
@@ -150,7 +150,7 @@ function Login() {
         </Features>
         <Actions>
           <LoginContent>
-            <ErrorMeesage visible={isError}>{errorMessage}</ErrorMeesage>
+            {/* <ErrorMeesage visible={isError}>{errorMessage}</ErrorMeesage> */}
             <FormElement>
               <span>Email *</span>
               <input
@@ -284,11 +284,11 @@ const LoginContent = styled.div`
   align-items: center;
 `;
 
-const ErrorMeesage = styled.div`
-  font-size: 12px;
-  color: red;
-  display: ${(props) => (props.visible ? "block" : "none")};
-`;
+// const ErrorMeesage = styled.div`
+//   font-size: 12px;
+//   color: red;
+//   display: ${(props) => (props.visible ? "block" : "none")};
+// `;
 
 const FormElement = styled.div`
   margin: 10px;

@@ -8,6 +8,7 @@ const initialState = {
   confirmPassword: "",
   isError: false,
   errorMesssage: "",
+  errors: {},
 };
 
 const userSlice = createSlice({
@@ -34,9 +35,9 @@ const userSlice = createSlice({
     setUserPhoto: (state, action) => {
       state.photo = action.payload.photo;
     },
-    setErrorMessage: (state, action) => {
-      state.isError = action.payload.isError;
-      state.errorMessage = action.payload.errorMessage;
+    setErrors: (state, action) => {
+      // state.isError = action.payload.isError;
+      state.errors[action.payload.field] = action.payload.errorMessage;
     },
     setSignOut: (state) => {
       state.name = "";
@@ -54,7 +55,7 @@ export const {
   setUserPhoto,
   setUserPassword,
   setUserConfirmPassword,
-  setErrorMessage,
+  setErrors,
 } = userSlice.actions;
 
 export const selectUserName = (state) => state.user.name;
@@ -63,6 +64,6 @@ export const selectPassword = (state) => state.user.password;
 export const selectConfirmPassword = (state) => state.user.confirmPassword;
 export const selectPhoto = (state) => state.user.photo;
 export const selectIsError = (state) => state.user.isError;
-export const selectErrorMessage = (state) => state.user.errorMessage;
+export const selectErrors = (state) => state.user.errors;
 
 export default userSlice.reducer;
