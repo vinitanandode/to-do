@@ -1,7 +1,7 @@
 // TODO: already have an account line, validations, verify email address flow, send welcome email flow
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import imgSignup from "../images/signup2.jpg";
 import { auth } from "../firebase";
@@ -17,16 +17,17 @@ import {
   selectConfirmPassword,
   setErrors,
   selectErrors,
-  // selectIsError,
+  selectIsError,
+  ClearErrors,
 } from "../features/user/userSlice";
 
 function Register() {
   const dispatch = useDispatch();
-  // const history = useHistory();
+  const history = useHistory();
   const name = useSelector(selectUserName);
   const email = useSelector(selectEmail);
   const password = useSelector(selectPassword);
-  // const isError = useSelector(selectIsError);
+  const isError = useSelector(selectIsError);
   const errors = useSelector(selectErrors);
   const confirmPassword = useSelector(selectConfirmPassword);
   // const [errors, setErrors] = useState({});
@@ -40,19 +41,20 @@ function Register() {
   const signUp = (e) => {
     console.log("signuip", email + ": " + password + ": " + name);
     e.preventDefault();
-    debugger;
 
-    if (ValidateForm()) {
-      setError("name", "");
-      setError("email", "");
-      setError("password", "");
-      setError("confirmPassword", "");
+    ValidateForm();
+
+    debugger;
+    if (isError) {
+      console.log("validated");
+      dispatch(ClearErrors());
 
       auth
         .createUserWithEmailAndPassword(email, password)
         .then((userCredentials) => {
           const user = userCredentials.user;
           user.sendEmailVerification().then(() => {
+            history.push("/verify");
             console.log("email sent");
           });
           console.log("new user", user);
@@ -64,132 +66,47 @@ function Register() {
   };
 
   const ValidateUsername = () => {
-    debugger;
-    let isFormValid = true;
     if (name === "") {
-      isFormValid = false;
       setError("name", "Please enter name.");
-    } else {
-      isFormValid = true;
-      setError("name", "");
     }
-    return isFormValid;
   };
 
   const ValidateEmail = () => {
-    // debugger;
-    let isFormValid = true;
     const validRegex =
       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
     if (!email) {
-      isFormValid = false;
-      // errors["email"] = "Please enter email.";
       setError("email", "Please enter email.");
-    } else if (email.match(validRegex)) {
-      isFormValid = true;
-      setError("email", "");
-    } else {
-      isFormValid = true;
+    } else if (!email.match(validRegex)) {
       setError("email", "Enter valid email.");
     }
-
-    // debugger;
-    return isFormValid;
   };
 
   const ValidatePassword = () => {
-    debugger;
-    let isFormValid = true;
     if (!password) {
-      isFormValid = false;
-      // errors["password"] = "Please enter password.";
       setError("password", "Please enter password.");
-    } else {
-      isFormValid = true;
-      setError("password", "");
     }
-    return isFormValid;
   };
 
   const ValidateConfirmPassword = () => {
-    let isFormValid = true;
     if (!confirmPassword) {
-      isFormValid = false;
-      // errors["confirmPassword"] = "Please enter confirm password.";
       setError("confirmPassword", "Please enter confirm password.");
-    } else {
-      isFormValid = true;
-      setError("confirmPassword", "");
     }
-    return isFormValid;
   };
 
   const ValidatePasswordMatch = () => {
-    debugger;
-    let isFormValid = true;
     if (password && confirmPassword && password !== confirmPassword) {
-      isFormValid = false;
-      // errors["password"] = "Password & Confirm Password doesn't match.";
       setError("password", "Password doesn't match.");
       setError("confirmPassword", "Confirmed Password doesn't match.");
     }
-    return isFormValid;
   };
 
   const ValidateForm = () => {
-    // debugger;
-    // if (name === "") {
-    //   isFormValid = false;
-    //   // errors["name"] = "Please enter name.";
-    //   setError("name", "Please enter name.");
-    // }
-
-    // if (!email) {
-    //   isFormValid = false;
-    //   errors["email"] = "Please enter email.";
-    //   setError("email", "Please enter email.");
-    // }
-
-    // const validRegex =
-    //   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    // if (email.match(validRegex)) {
-    //   // setError(false, "");
-    // }
-
-    let isFormValid = true;
-    debugger;
-    if (
-      !ValidateUsername() ||
-      !ValidateEmail() ||
-      !ValidatePassword() ||
-      !ValidateConfirmPassword() ||
-      !ValidatePasswordMatch()
-    ) {
-      isFormValid = false;
-    }
-
-    // if (!password) {
-    //   isFormValid = false;
-    //   // errors["password"] = "Please enter password.";
-    //   setError("password", "Please enter password.");
-    // }
-
-    // if (!confirmPassword) {
-    //   isFormValid = false;
-    //   // errors["confirmPassword"] = "Please enter confirm password.";
-    //   setError("confirmPassword", "Please enter confirm password.");
-    // }
-
-    // if (password && confirmPassword && password !== confirmPassword) {
-    //   isFormValid = false;
-    //   // errors["password"] = "Password & Confirm Password doesn't match.";
-    //   setError("password", "Password doesn't match.");
-    //   setError("confirmPassword", "Confirmed Password doesn't match.");
-    // }
-
-    // setErrors(errors);
-    return isFormValid;
+    ValidateUsername();
+    ValidateEmail();
+    ValidatePassword();
+    ValidateConfirmPassword();
+    ValidatePasswordMatch();
   };
 
   const onNameChange = (e) => {
