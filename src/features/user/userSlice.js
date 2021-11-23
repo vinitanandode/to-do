@@ -36,8 +36,20 @@ const userSlice = createSlice({
       state.photo = action.payload.photo;
     },
     setErrors: (state, action) => {
-      // state.isError = action.payload.isError;
-      state.errors[action.payload.field] = action.payload.errorMessage;
+      const newErrors = state.errors;
+      let isNewError = state.isError;
+      newErrors[action.payload.field] = action.payload.errorMessage;
+      isNewError = true;
+      state.errors = newErrors;
+      state.isError = isNewError;
+    },
+    ClearErrors: (state) => {
+      let newErrors = state.errors;
+      let isNewError = state.isError;
+      newErrors = {};
+      isNewError = false;
+      state.errors = newErrors;
+      state.isError = isNewError;
     },
     setSignOut: (state) => {
       state.name = "";
@@ -56,6 +68,7 @@ export const {
   setUserPassword,
   setUserConfirmPassword,
   setErrors,
+  ClearErrors,
 } = userSlice.actions;
 
 export const selectUserName = (state) => state.user.name;
