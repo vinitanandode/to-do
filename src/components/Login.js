@@ -183,7 +183,7 @@ function Login() {
             </FormElement>
             <SignInWrap onClick={signIn} id="btnSignIn">
               <a>
-                <span>Sign Inn</span>
+                <span>Sign In2</span>
               </a>
             </SignInWrap>
           </LoginContent>
