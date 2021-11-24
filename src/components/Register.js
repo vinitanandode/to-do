@@ -45,7 +45,7 @@ function Register() {
     ValidateForm();
 
     debugger;
-    if (isError) {
+    if (!isError) {
       console.log("validated");
       dispatch(ClearErrors());
 
