@@ -136,7 +136,7 @@ function Login() {
   return (
     <Container>
       <Welcome>
-        <img src={imgBg} />
+        <img src={imgBg} alt="My to-do list banner" />
       </Welcome>
       <Content>
         <Banner>
@@ -147,15 +147,15 @@ function Login() {
         </WelcomeMessage>
         <Features>
           <a>
-            <img src={imgCheck} />
+            <img src={imgCheck} alt="Check" />
             <span>Keep all your tasks at one place</span>
           </a>
           <a>
-            <img src={imgCheck} />
+            <img src={imgCheck} alt="Check" />
             <span>Manage your tasks from any device</span>
           </a>
           <a>
-            <img src={imgCheck} />
+            <img src={imgCheck} alt="Check" />
             <span>Get overview of pending and completed tasks</span>
           </a>
         </Features>
@@ -183,7 +183,7 @@ function Login() {
             </FormElement>
             <SignInWrap onClick={signIn} id="btnSignIn">
               <a>
-                <span>Sign In</span>
+                <span>Sign Inn</span>
               </a>
             </SignInWrap>
           </LoginContent>
@@ -197,13 +197,13 @@ function Login() {
             </Wrap>
             <Wrap onClick={googleSignUp}>
               <a>
-                <img src={imgGoogle} />
+                <img src={imgGoogle} alt="Google" />
                 <span>Sign in with Google</span>
               </a>
             </Wrap>
             <Wrap onClick={googleSignUp}>
               <a>
-                <img src={imgGitHub} />
+                <img src={imgGitHub} alt="Git hub" />
                 <span>Sign in with Git Hub</span>
               </a>
             </Wrap>

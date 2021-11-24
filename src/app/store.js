@@ -1,8 +1,8 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import notesSlice from '../features/notes/notesSlice';
-import taskReducer from '../features/task/taskSlice';
-import userReducer from '../features/user/userSlice';
-import {loadState, saveState} from './localStorage'; 
+import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
+import notesSlice from "../features/notes/notesSlice";
+import taskReducer from "../features/task/taskSlice";
+import userReducer from "../features/user/userSlice";
+import { loadState, saveState } from "./localStorage";
 
 const persistedState = loadState();
 export const store = configureStore({
@@ -10,16 +10,16 @@ export const store = configureStore({
   reducer: {
     tasks: taskReducer,
     user: userReducer,
-    notes: notesSlice
+    notes: notesSlice,
   },
   middleware: getDefaultMiddleware({
     serializableCheck: false,
-  })
+  }),
 });
 
-store.subscribe(() =>{
+store.subscribe(() => {
   saveState(store.getState());
-})
+});
 
 // import { createStore, applyMiddleware } from 'redux'
 // import { persistStore, persistReducer } from 'redux-persist' // imports from redux-persist
