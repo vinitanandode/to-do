@@ -169,7 +169,7 @@ function Register() {
         <RegisterForm>
           <FormElement>
             <span>Name *</span>
-            <a href="">
+            <a>
               <input
                 type="text"
                 name="name"
@@ -182,7 +182,7 @@ function Register() {
           </FormElement>
           <FormElement>
             <span>Email *</span>
-            <a href="">
+            <a>
               <input
                 type="text"
                 onBlur={() => ValidateEmail()}
@@ -195,7 +195,7 @@ function Register() {
           </FormElement>
           <FormElement>
             <span>Password *</span>
-            <a href="">
+            <a>
               <input
                 type="password"
                 onBlur={() => ValidatePassword()}
@@ -208,7 +208,7 @@ function Register() {
           </FormElement>
           <FormElement>
             <span>Confirm Password *</span>
-            <a href="">
+            <a>
               <input
                 type="password"
                 onBlur={() => ValidateConfirmPassword()}
@@ -220,7 +220,7 @@ function Register() {
             </a>
           </FormElement>
           <SignupWrap onClick={signUp}>
-            <a href="">
+            <a>
               {/* <img src={imgGoogle} /> */}
               <span>Sign Up</span>
             </a>
