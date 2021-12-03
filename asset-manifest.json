@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/to-do/static/css/main.821f5292.chunk.css",
-    "main.js": "/to-do/static/js/main.02d2c1f9.chunk.js",
-    "main.js.map": "/to-do/static/js/main.02d2c1f9.chunk.js.map",
+    "main.js": "/to-do/static/js/main.3fbce563.chunk.js",
+    "main.js.map": "/to-do/static/js/main.3fbce563.chunk.js.map",
     "runtime-main.js": "/to-do/static/js/runtime-main.204cbc4b.js",
     "runtime-main.js.map": "/to-do/static/js/runtime-main.204cbc4b.js.map",
     "static/css/2.5dad477e.chunk.css": "/to-do/static/css/2.5dad477e.chunk.css",
@@ -19,6 +19,7 @@
     "static/media/imp.2347697d.png": "/to-do/static/media/imp.2347697d.png",
     "static/media/impred.becf0e61.svg": "/to-do/static/media/impred.becf0e61.svg",
     "static/media/logout.58d5f916.png": "/to-do/static/media/logout.58d5f916.png",
+    "static/media/my-todo-logo.5bcdefc1.png": "/to-do/static/media/my-todo-logo.5bcdefc1.png",
     "static/media/pending.12df1e96.png": "/to-do/static/media/pending.12df1e96.png",
     "static/media/signup2.01849878.jpg": "/to-do/static/media/signup2.01849878.jpg"
   },
@@ -27,6 +28,6 @@
     "static/css/2.5dad477e.chunk.css",
     "static/js/2.e67e70af.chunk.js",
     "static/css/main.821f5292.chunk.css",
-    "static/js/main.02d2c1f9.chunk.js"
+    "static/js/main.3fbce563.chunk.js"
   ]
 }
