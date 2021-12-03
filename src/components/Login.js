@@ -18,6 +18,7 @@ import imgBg from "../images/bg.jpg";
 import imgCheck from "../images/check2.png";
 import imgGoogle from "../images/google.svg";
 import imgGitHub from "../images/GitHub.png";
+import imgMyLogo from "../images/my-todo-logo.png";
 
 function Login() {
   const dispatch = useDispatch();
@@ -140,6 +141,7 @@ function Login() {
       </Welcome>
       <Content>
         <Banner>
+          <img src={imgMyLogo} />
           <span>My to-do list</span>
         </Banner>
         <WelcomeMessage>
@@ -246,6 +248,15 @@ const Banner = styled.div`
   font-size: 30px;
   font-weight: 1500;
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+
+  img {
+    padding-right: 10px;
+    width: 50px;
+    height: 50px;
+  }
 `;
 
 const WelcomeMessage = styled.div`

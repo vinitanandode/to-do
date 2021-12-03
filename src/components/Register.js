@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import imgSignup from "../images/signup2.jpg";
+import imgMyLogo from "../images/my-todo-logo.png";
 import { auth } from "../firebase";
 import {
   setUserName,
@@ -160,6 +161,7 @@ function Register() {
       <Content>
         <Banner>
           <a href="/">
+            <img src={imgMyLogo} />
             <span>My to-do list</span>
           </a>
         </Banner>
@@ -277,6 +279,14 @@ const Banner = styled.div`
   margin-bottom: 10px;
 
   a {
+    display: flex;
+    align-items: center;
+
+    img {
+      padding-right: 10px;
+      width: 50px;
+      height: 50px;
+    }
     text-decoration: none;
   }
   a:visited {
