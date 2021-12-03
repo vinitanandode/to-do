@@ -1,41 +1,64 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template. 
 
-## Available Scripts
+## ![Logo](https://user-images.githubusercontent.com/42133952/144667666-ccc51cd2-128b-4248-ac92-731be8be23ab.png)
+<img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/vinitanandode/to-do/My%20to-do%20List%20CI"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/vinitanandode/to-do"> <img alt="GitHub last commit (branch)" src="https://img.shields.io/github/last-commit/vinitanandode/to-do/master"> <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/vinitanandode/to-do"> <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/vinitanandode/to-do">
 
-In the project directory, you can run:
+Keep all your tasks at one place. Check out the [demo](https://vinitanandode.github.io/to-do/).
 
-### `npm start`
+### Features
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Sign in with Google
+- Sign in with Email
+- Email Verification
+- Add, Edit and Delete tasks
+- Mark tasks as important
+- View your pending and completed tasks
+- Responsive UI
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+### Technology Stack
 
-### `npm test`
+* React JS
+* Redux
+* Styled Components
+* Firebase
+* HTML
+* CSS
+* JavaScript
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Run Locally
 
-### `npm run build`
+Clone the project
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+  git clone https://github.com/vinitanandode/to-do.git
+```
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+Go to the project directory
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+  cd my-project
+```
 
-### `npm run eject`
+Install dependencies
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+  npm install
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Start the server
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+  npm run start
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Deployment
+
+To deploy this project run
+
+```bash
+  npm run deploy
+```
+
 
 ## Learn More
 
