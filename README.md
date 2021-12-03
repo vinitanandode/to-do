@@ -1,6 +1,6 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template. 
 
-## My to-do List
+## ![Logo](https://user-images.githubusercontent.com/42133952/144667666-ccc51cd2-128b-4248-ac92-731be8be23ab.png)
 <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/vinitanandode/to-do/My%20to-do%20List%20CI"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/vinitanandode/to-do"> <img alt="GitHub last commit (branch)" src="https://img.shields.io/github/last-commit/vinitanandode/to-do/master"> <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/vinitanandode/to-do"> <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/vinitanandode/to-do">
 
 Keep all your tasks at one place. Check out the [demo](https://vinitanandode.github.io/to-do/).
